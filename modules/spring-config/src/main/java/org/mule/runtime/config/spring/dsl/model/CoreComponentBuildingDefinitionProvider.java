@@ -43,6 +43,7 @@ import org.mule.runtime.config.spring.MuleConfigurationConfigurator;
 import org.mule.runtime.config.spring.NotificationConfig;
 import org.mule.runtime.config.spring.ServerNotificationManagerConfigurator;
 import org.mule.runtime.config.spring.dsl.api.AttributeDefinition;
+import org.mule.runtime.config.spring.dsl.api.CommonTypeConverters;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinitionProvider;
 import org.mule.runtime.config.spring.dsl.processor.ExplicitMethodEntryPointResolverObjectFactory;
@@ -1021,14 +1022,14 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
     buildingDefinitions.add(baseDefinition.copy()
         .withIdentifier(SINGLETON_OBJECT_ELEMENT)
         .withTypeDefinition(fromType(SingletonObjectFactory.class))
-        .withConstructorParameterDefinition(fromSimpleParameter("class").build())
+        .withConstructorParameterDefinition(fromSimpleParameter("class", stringToClassConverter()).build())
         .withConstructorParameterDefinition(fromChildConfiguration(Map.class).withDefaultValue(new HashMap<>()).build())
         .build());
 
     buildingDefinitions.add(baseDefinition.copy()
         .withIdentifier(PROTOTYPE_OBJECT_ELEMENT)
         .withTypeDefinition(fromType(PrototypeObjectFactory.class))
-        .withConstructorParameterDefinition(fromSimpleParameter("class").build())
+        .withConstructorParameterDefinition(fromSimpleParameter("class", stringToClassConverter()).build())
         .withConstructorParameterDefinition(fromChildConfiguration(Map.class).withDefaultValue(new HashMap<>()).build())
         .build());
 

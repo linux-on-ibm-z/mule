@@ -6,9 +6,9 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
 
-    <flow name="orange1">
-        <component class="org.mule.tck.testmodels.fruit.Orange" />
-    </flow>
+    <!--<flow name="orange1">-->
+        <!--<component class="org.mule.tck.testmodels.fruit.Orange" />-->
+    <!--</flow>-->
 
     <flow name="orange2">
         <pooled-component>
@@ -20,44 +20,44 @@
         </pooled-component>
     </flow>
 
-    <flow name="orange3">
-        <component>
-            <singleton-object class="org.mule.tck.testmodels.fruit.Orange" />
-        </component>
-    </flow>
+    <!--<flow name="orange3">-->
+        <!--<component>-->
+            <!--<singleton-object class="org.mule.tck.testmodels.fruit.Orange" />-->
+        <!--</component>-->
+    <!--</flow>-->
 
-    <flow name="orange4">
-        <component>
-            <spring-object bean="myOnlyOrange" />
-        </component>
-    </flow>
+    <!--<flow name="orange4">-->
+        <!--<component>-->
+            <!--<spring-object bean="myOnlyOrange" />-->
+        <!--</component>-->
+    <!--</flow>-->
 
-    <flow name="orange5">
-        <component>
-            <spring-object bean="myOrangeFactory" />
-        </component>
-    </flow>
+    <!--<flow name="orange5">-->
+        <!--<component>-->
+            <!--<spring-object bean="myOrangeFactory" />-->
+        <!--</component>-->
+    <!--</flow>-->
 
-    <flow name="orange6">
-        <component>
-            <spring-object bean="myNonStandardOrangeFactory" />
-        </component>
-    </flow>
+    <!--<flow name="orange6">-->
+        <!--<component>-->
+            <!--<spring-object bean="myNonStandardOrangeFactory" />-->
+        <!--</component>-->
+    <!--</flow>-->
 
 
-    <!-- Singleton instance -->
-    <spring:bean name="myOnlyOrange" class="org.mule.tck.testmodels.fruit.Orange" />
+    <!--&lt;!&ndash; Singleton instance &ndash;&gt;-->
+    <!--<spring:bean name="myOnlyOrange" class="org.mule.tck.testmodels.fruit.Orange" />-->
 
-    <!-- Spring FactoryBean implementation -->
-    <spring:bean id="myOrangeFactory"
-        class="org.mule.functional.testmodels.fruit.FloridaSunnyOrangeFactoryBean">
-        <spring:property name="segments" value="8" />
-        <spring:property name="radius" value="15" />
-    </spring:bean>
+    <!--&lt;!&ndash; Spring FactoryBean implementation &ndash;&gt;-->
+    <!--<spring:bean id="myOrangeFactory"-->
+        <!--class="org.mule.functional.testmodels.fruit.FloridaSunnyOrangeFactoryBean">-->
+        <!--<spring:property name="segments" value="8" />-->
+        <!--<spring:property name="radius" value="15" />-->
+    <!--</spring:bean>-->
 
-    <!-- POJO used as FactoryBean -->
-    <spring:bean id="myNonStandardOrangeFactory"
-        class="org.mule.functional.testmodels.fruit.FloridaSunnyOrangeFactory"
-        factory-method="giveMeAnOrange" />
+    <!--&lt;!&ndash; POJO used as FactoryBean &ndash;&gt;-->
+    <!--<spring:bean id="myNonStandardOrangeFactory"-->
+        <!--class="org.mule.functional.testmodels.fruit.FloridaSunnyOrangeFactory"-->
+        <!--factory-method="giveMeAnOrange" />-->
 
 </mule>

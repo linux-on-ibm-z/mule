@@ -40,7 +40,13 @@ public class PropertiesMapBeanDefinitionCreator extends BeanDefinitionCreator {
         managedMap = createManagedMapFromEntries(componentModel);
       } else {
         managedMap = new ManagedMap<>();
-        processAndAddMapProperty(componentModel, managedMap);
+        ComponentModel parentComponentModel = componentModel.getParent();
+        parentComponentModel.getInnerComponents()
+                .stream()
+                .filter(childComponentModel -> childComponentModel.getIdentifier().equals(MULE_PROPERTY_IDENTIFIER))
+                .forEach(childComponentModel -> {
+                  processAndAddMapProperty(childComponentModel, managedMap);
+                });
       }
       BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.rootBeanDefinition(HashMap.class);
       componentModel.setBeanDefinition(beanDefinitionBuilder
