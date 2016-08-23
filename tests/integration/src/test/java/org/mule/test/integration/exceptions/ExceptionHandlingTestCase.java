@@ -67,7 +67,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("outboundEndpointInFlow").withPayload(TEST_MESSAGE).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outFlow2", 3000);
+    MuleMessage response = client.request("test://outFlow2", 3000).getRight().get();
     assertNotNull(response);
   }
 
@@ -76,7 +76,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("outboundDynamicEndpointInFlow").withPayload(MESSAGE).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outFlow3", 3000);
+    MuleMessage response = client.request("test://outFlow3", 3000).getRight().get();
     assertNotNull(response);
   }
 
@@ -85,7 +85,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("asyncInFlow").withPayload(MESSAGE).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outFlow4", 3000);
+    MuleMessage response = client.request("test://outFlow4", 3000).getRight().get();
     assertNotNull(response);
     assertTrue(injectedMessagingExceptionHandler instanceof CatchMessagingExceptionStrategy);
   }
@@ -95,7 +95,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("untilSuccessfulInFlow").withPayload(MESSAGE).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outFlow5", 3000);
+    MuleMessage response = client.request("test://outFlow5", 3000).getRight().get();
 
     assertNotNull(response);
     assertTrue(injectedMessagingExceptionHandler instanceof CatchMessagingExceptionStrategy);
@@ -120,7 +120,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("outboundEndpointInScope").withPayload(list).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outScope2", 3000);
+    MuleMessage response = client.request("test://outScope2", 3000).getRight().get();
 
     assertNotNull(response);
 
@@ -137,7 +137,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
         .run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outScope3", 3000);
+    MuleMessage response = client.request("test://outScope3", 3000).getRight().get();
 
     assertNotNull(response);
 
@@ -151,7 +151,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("customProcessorInTransactionalScope").withPayload(MESSAGE).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outTransactional1", 3000);
+    MuleMessage response = client.request("test://outTransactional1", 3000).getRight().get();
 
     assertNotNull(response);
 
@@ -186,7 +186,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("customProcessorInExceptionStrategy").withPayload(MESSAGE).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://outStrategy1", 3000);
+    MuleMessage response = client.request("test://outStrategy1", 3000).getRight().get();
 
     assertNotNull(response);
 
@@ -234,7 +234,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner(flowName).withPayload(MESSAGE).withInboundProperties(messageProperties).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request(expected, 3000);
+    MuleMessage response = client.request(expected, 3000).getRight().get();
 
     assertNotNull(response);
   }

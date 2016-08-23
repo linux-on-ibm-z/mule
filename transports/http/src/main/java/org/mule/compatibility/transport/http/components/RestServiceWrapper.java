@@ -14,6 +14,7 @@ import org.mule.compatibility.core.api.endpoint.EndpointBuilder;
 import org.mule.compatibility.core.api.endpoint.OutboundEndpoint;
 import org.mule.compatibility.core.endpoint.EndpointURIEndpointBuilder;
 import org.mule.compatibility.transport.http.HttpConstants;
+import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.DefaultMuleEventContext;
@@ -24,6 +25,7 @@ import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.routing.filter.Filter;
 import org.mule.runtime.core.component.AbstractComponent;
 import org.mule.runtime.core.config.i18n.CoreMessages;
+import org.mule.runtime.core.functional.Either;
 import org.mule.runtime.core.routing.filters.ExpressionFilter;
 import org.mule.runtime.core.util.StringUtils;
 
@@ -178,17 +180,18 @@ public class RestServiceWrapper extends AbstractComponent {
     endpointBuilder.setExchangePattern(REQUEST_RESPONSE);
     OutboundEndpoint outboundEndpoint = endpointBuilder.buildOutboundEndpoint();
 
-    MuleEventContext eventContext = new DefaultMuleEventContext(event);
+    Either<Error, MuleMessage> clientResponse = muleContext.getClient().send(outboundEndpoint.getEndpointURI().toString(),
+                                                                             MuleMessage.builder(event.getMessage())
+                                                                                 .payload(requestBody).build());
+
+    if (clientResponse.isLeft()) {
+      handleException(new RestServiceException(CoreMessages.failedToInvokeRestService(tempUrl), event, this));
+    }
+
     MuleEvent result =
         new DefaultMuleEvent(event.getExecutionContext(),
-                             muleContext.getClient().send(outboundEndpoint.getEndpointURI().toString(),
-                                                          MuleMessage.builder(event.getMessage()).payload(requestBody).build()),
+                             clientResponse.getRight(),
                              flowConstruct);
-
-    if (isErrorPayload(result)) {
-      handleException(new RestServiceException(CoreMessages.failedToInvokeRestService(tempUrl), event, this),
-                      result.getMessage());
-    }
 
     return result.getMessage();
   }
@@ -286,7 +289,7 @@ public class RestServiceWrapper extends AbstractComponent {
     return errorFilter != null && errorFilter.accept(event);
   }
 
-  protected void handleException(RestServiceException e, MuleMessage result) throws Exception {
+  protected void handleException(RestServiceException e) throws Exception {
     throw e;
   }
 

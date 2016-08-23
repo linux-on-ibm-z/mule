@@ -22,6 +22,7 @@ import org.mule.runtime.core.api.processor.MessageProcessor;
 import org.mule.runtime.core.api.processor.MessageProcessorChain;
 import org.mule.runtime.core.context.notification.ExceptionStrategyNotification;
 import org.mule.runtime.core.management.stats.FlowConstructStatistics;
+import org.mule.runtime.core.message.DefaultErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.runtime.core.processor.AbstractRequestResponseMessageProcessor;
 import org.mule.runtime.core.processor.chain.DefaultMessageProcessorChainBuilder;
@@ -65,8 +66,8 @@ public abstract class TemplateMessagingExceptionStrategy extends AbstractExcepti
       fireNotification(exception);
       logException(exception, request);
       processStatistics(request);
-      request
-          .setMessage(MuleMessage.builder(request.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build());
+      request.setError(new DefaultErrorBuilder(exception).build());
+      request.setMessage(MuleMessage.builder(request.getMessage()).build());
 
       markExceptionAsHandledIfRequired(exception);
       return beforeRouting(exception, request);
@@ -103,6 +104,7 @@ public abstract class TemplateMessagingExceptionStrategy extends AbstractExcepti
         // Do nothing
       }
 
+      event.setError(new DefaultErrorBuilder(exception).build());
       event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build());
       return event;
     }
@@ -136,6 +138,7 @@ public abstract class TemplateMessagingExceptionStrategy extends AbstractExcepti
 
   protected void nullifyExceptionPayloadIfRequired(MuleEvent event) {
     if (this.handleException) {
+      event.setError(null);
       event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(null).build());
     }
   }
@@ -150,6 +153,7 @@ public abstract class TemplateMessagingExceptionStrategy extends AbstractExcepti
   protected MuleEvent route(MuleEvent event, Exception t) {
     if (!getMessageProcessors().isEmpty()) {
       try {
+        event.setError(new DefaultErrorBuilder(t).build());
         event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(t)).build());
         MuleEvent result = configuredMessageProcessors.process(event);
         return result;

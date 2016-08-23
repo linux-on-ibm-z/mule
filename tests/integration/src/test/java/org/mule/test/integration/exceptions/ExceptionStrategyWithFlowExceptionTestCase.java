@@ -30,8 +30,9 @@ public class ExceptionStrategyWithFlowExceptionTestCase extends AbstractIntegrat
   public void testFlowExceptionExceptionStrategy() throws Exception {
     flowRunner("customException").withPayload(getTestMuleMessage(TEST_MESSAGE)).asynchronously().run();
     MuleClient client = muleContext.getClient();
-    MuleMessage message = client.request("test://out", RECEIVE_TIMEOUT);
+    MuleMessage message = client.request("test://out", RECEIVE_TIMEOUT).getRight().get();
 
+    //TODO PLG review
     assertNotNull("request returned no message", message);
     assertTrue(message.getPayload() instanceof ExceptionMessage);
   }

@@ -17,6 +17,7 @@ public class CatchMessagingExceptionStrategy extends TemplateMessagingExceptionS
 
   @Override
   protected void nullifyExceptionPayloadIfRequired(MuleEvent event) {
+    event.setError(null);
     event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(null).build());
   }
 

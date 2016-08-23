@@ -52,7 +52,7 @@ public class Mule4412TestCase extends AbstractIntegrationTestCase {
     MuleClient client = muleContext.getClient();
     flowRunner("AsyncRequest").withPayload(TEST_MESSAGE).withInboundProperty("pass", "true").asynchronously().run();
 
-    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT);
+    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT).getRight().get();
     int times = FilterCounter.counter.get();
     assertThat("did not filter one time as expected", times, is(1));
     assertNotNull(reply);
@@ -72,7 +72,7 @@ public class Mule4412TestCase extends AbstractIntegrationTestCase {
   public void testWrongPropertyKey() throws Exception {
     MuleClient client = muleContext.getClient();
     flowRunner("AsyncRequest").withPayload(TEST_MESSAGE).withInboundProperty("fail", "true").asynchronously().run();
-    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT);
+    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT).getRight().get();
     assertNull(reply);
     assertThat("should not have filtered", FilterCounter.counter.get(), is(0));
   }
@@ -87,7 +87,7 @@ public class Mule4412TestCase extends AbstractIntegrationTestCase {
     MuleClient client = muleContext.getClient();
     flowRunner("AsyncRequest").withPayload(TEST_MESSAGE).withInboundProperty("pass", "false").asynchronously().run();
 
-    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT);
+    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT).getRight().get();
     assertNull(reply);
     assertThat("should not have filtered", FilterCounter.counter.get(), is(0));
   }
@@ -101,7 +101,7 @@ public class Mule4412TestCase extends AbstractIntegrationTestCase {
   public void testNoProperty() throws Exception {
     MuleClient client = muleContext.getClient();
     flowRunner("AsyncRequest").withPayload(TEST_MESSAGE).asynchronously().run();
-    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT);
+    MuleMessage reply = client.request("test://asyncResponse", RECEIVE_TIMEOUT).getRight().get();
     assertNull(reply);
     assertThat("should not have filtered", FilterCounter.counter.get(), is(0));
   }

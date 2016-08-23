@@ -168,7 +168,7 @@ public class NoTransformFunctionalTestComponent implements Callable, MuleContext
 
   /**
    * Often you will may want to return a fixed message payload to simulate and external system call. This can be done using the
-   * 'returnMessage' property. Note that you can return complex objects by using the <container-property> element in the Xml
+   * 'returnEvent' property. Note that you can return complex objects by using the <container-property> element in the Xml
    * configuration.
    *
    * @return the message payload to always return from this service instance
@@ -179,7 +179,7 @@ public class NoTransformFunctionalTestComponent implements Callable, MuleContext
 
   /**
    * Often you will may want to return a fixed message payload to simulate and external system call. This can be done using the
-   * 'returnMessage' property. Note that you can return complex objects by using the <container-property> element in the Xml
+   * 'returnEvent' property. Note that you can return complex objects by using the <container-property> element in the Xml
    * configuration.
    *
    * @param returnMessage the message payload to always return from this service instance

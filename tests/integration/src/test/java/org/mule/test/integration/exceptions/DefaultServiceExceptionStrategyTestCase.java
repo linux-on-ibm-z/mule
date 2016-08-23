@@ -49,10 +49,10 @@ public class DefaultServiceExceptionStrategyTestCase extends AbstractIntegration
 
     flowRunner("testService1").withPayload(getTestMuleMessage()).asynchronously().run();
 
-    assertExceptionMessage(muleContext.getClient().request("test://out1", RECEIVE_TIMEOUT));
+    assertExceptionMessage(muleContext.getClient().request("test://out1", RECEIVE_TIMEOUT).getRight());
     // request one more time to ensure that only one exception message was sent
     // per exception
-    assertNull(muleContext.getClient().request("test://out2", RECEIVE_TIMEOUT));
+    assertNull(muleContext.getClient().request("test://out2", RECEIVE_TIMEOUT).getRight());
   }
 
   @Test
@@ -72,8 +72,8 @@ public class DefaultServiceExceptionStrategyTestCase extends AbstractIntegration
 
     flowRunner("testService2").withPayload(getTestMuleMessage()).asynchronously().run();
 
-    MuleMessage out2 = client.request("test://out2", RECEIVE_TIMEOUT);
-    MuleMessage out3 = client.request("test://out3", RECEIVE_TIMEOUT);
+    MuleMessage out2 = client.request("test://out2", RECEIVE_TIMEOUT).getRight().get();
+    MuleMessage out3 = client.request("test://out3", RECEIVE_TIMEOUT).getRight().get();
     assertExceptionMessage(out2);
     assertExceptionMessage(out3);
     assertThat(out2, equalTo(out3));
@@ -85,7 +85,7 @@ public class DefaultServiceExceptionStrategyTestCase extends AbstractIntegration
 
     flowRunner("testService3").withPayload(getTestMuleMessage()).asynchronously().run();
 
-    MuleMessage out4 = mc.request("test://out4", RECEIVE_TIMEOUT);
+    MuleMessage out4 = mc.request("test://out4", RECEIVE_TIMEOUT).getRight().get();
     assertEquals("ERROR!", getPayloadAsString(out4));
   }
 
@@ -98,7 +98,7 @@ public class DefaultServiceExceptionStrategyTestCase extends AbstractIntegration
     MuleClient client = muleContext.getClient();
     flowRunner("testService6").withPayload(getTestMuleMessage(map)).asynchronously().run();
 
-    MuleMessage message = client.request("test://out6", RECEIVE_TIMEOUT);
+    MuleMessage message = client.request("test://out6", RECEIVE_TIMEOUT).getRight().get();
 
     assertTrue(message.getPayload() instanceof ExceptionMessage);
     Object payload = ((ExceptionMessage) message.getPayload()).getPayload();
@@ -115,7 +115,7 @@ public class DefaultServiceExceptionStrategyTestCase extends AbstractIntegration
     MuleClient client = muleContext.getClient();
     flowRunner("testService5").withPayload(getTestMuleMessage()).asynchronously().run();
 
-    assertExceptionMessage(client.request("test://out5", RECEIVE_TIMEOUT));
+    assertExceptionMessage(client.request("test://out5", RECEIVE_TIMEOUT).getRight().get());
 
     Prober prober = new PollingProber(5000, 100);
     prober.check(new Probe() {

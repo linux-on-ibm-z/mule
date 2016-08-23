@@ -113,7 +113,7 @@ public class CatchMessagingExceptionStrategyTestCase extends AbstractMuleContext
       }
     }));
     assertThat(result.getMessage().getPayload(), is("B"));
-    assertThat(result.getMessage().getExceptionPayload(), is(nullValue()));
+    assertThat(result.getError(), is(nullValue()));
   }
 
   @Test

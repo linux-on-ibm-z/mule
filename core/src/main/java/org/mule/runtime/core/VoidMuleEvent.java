@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.core;
 
+import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.core.api.MessageExecutionContext;
 import org.mule.runtime.core.api.MuleContext;
@@ -55,6 +56,10 @@ public class VoidMuleEvent implements MuleEvent {
   }
 
   @Override
+  public Error getError() {
+    throw new UnsupportedOperationException();
+  }
+
   public byte[] getMessageAsBytes(MuleContext muleContext) throws MuleException {
     throw new UnsupportedOperationException();
   }
@@ -216,6 +221,11 @@ public class VoidMuleEvent implements MuleEvent {
 
   @Override
   public void setSecurityContext(SecurityContext context) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setError(Error error) {
     throw new UnsupportedOperationException();
   }
 

@@ -86,7 +86,6 @@ public class DefaultMuleMessageBuilder implements MuleMessage.Builder, MuleMessa
   private void copyMessageAttributes(MuleMessage message) {
     this.id = message.getUniqueId();
     this.rootId = message.getMessageRootId();
-    this.exceptionPayload = message.getExceptionPayload();
     message.getInboundPropertyNames().forEach(key -> {
       if (message.getInboundPropertyDataType(key) != null) {
         addInboundProperty(key, message.getInboundProperty(key), message.getInboundPropertyDataType(key));

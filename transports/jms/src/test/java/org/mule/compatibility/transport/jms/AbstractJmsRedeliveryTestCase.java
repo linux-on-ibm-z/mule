@@ -60,7 +60,7 @@ public abstract class AbstractJmsRedeliveryTestCase extends FunctionalTestCase {
   }
 
   protected void assertMessageInDlq() throws MuleException {
-    MuleMessage dl = client.request(JMS_DEAD_LETTER, 1000);
+    MuleMessage dl = client.request(JMS_DEAD_LETTER, 1000).getRight().get();
     assertNotNull(dl);
     assertTrue(dl.getPayload() instanceof ExceptionMessage);
     ExceptionMessage em = (ExceptionMessage) dl.getPayload();
@@ -69,7 +69,7 @@ public abstract class AbstractJmsRedeliveryTestCase extends FunctionalTestCase {
   }
 
   protected void assertMessageInDlqRollbackEs() throws Exception {
-    MuleMessage dl = client.request(JMS_DEAD_LETTER, 1000);
+    MuleMessage dl = client.request(JMS_DEAD_LETTER, 1000).getRight().get();
     assertNotNull(dl);
     assertTrue(getPayloadAsString(dl).equals(TEST_MESSAGE));
   }

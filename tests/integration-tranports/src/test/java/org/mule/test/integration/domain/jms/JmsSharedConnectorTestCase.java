@@ -81,7 +81,7 @@ public class JmsSharedConnectorTestCase extends DomainFunctionalTestCase {
       public boolean isSatisfied() {
         MuleMessage responseMessage;
         try {
-          responseMessage = getMuleContextForApp(CLIENT_APP).getClient().request(queueAddress(outQueue), 10);
+          responseMessage = getMuleContextForApp(CLIENT_APP).getClient().request(queueAddress(outQueue), 10).getRight().get();
         } catch (MuleException e) {
           throw new RuntimeException(e);
         }

@@ -18,6 +18,7 @@ import org.mule.runtime.core.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.processor.MessageProcessorContainer;
 import org.mule.runtime.core.api.processor.MessageProcessorPathElement;
 import org.mule.runtime.core.config.i18n.CoreMessages;
+import org.mule.runtime.core.message.DefaultErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.runtime.core.processor.AbstractMuleObjectOwner;
 
@@ -50,10 +51,11 @@ public class ChoiceMessagingExceptionStrategy extends AbstractMuleObjectOwner<Me
   @Override
   public MuleEvent handleException(Exception exception, MuleEvent event) {
     event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build());
-
+    event.setError(new DefaultErrorBuilder(exception).build());
     for (MessagingExceptionHandlerAcceptor exceptionListener : exceptionListeners) {
       if (exceptionListener.accept(event)) {
         event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(null).build());
+        event.setError(null);
         return exceptionListener.handleException(exception, event);
       }
     }

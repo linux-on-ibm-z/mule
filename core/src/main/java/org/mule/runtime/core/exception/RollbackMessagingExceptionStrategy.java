@@ -75,7 +75,7 @@ public class RollbackMessagingExceptionStrategy extends TemplateMessagingExcepti
    */
   @Override
   protected boolean acceptsEvent(MuleEvent event) {
-    return event.getMessage().getExceptionPayload().getException() instanceof MessageRedeliveredException
+    return event.getError().getException() instanceof MessageRedeliveredException
         && this.hasMaxRedeliveryAttempts();
   }
 

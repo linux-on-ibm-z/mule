@@ -10,7 +10,10 @@ package org.mule.runtime.module.db.integration.config;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mule.functional.util.TestFunctions.failIfErrorFunction;
 
+import org.mule.functional.util.TestFunctions;
 import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.module.db.integration.TestDbConfig;
@@ -43,10 +46,7 @@ public class DatasourcePoolingTestCase extends AbstractDatasourcePoolingTestCase
     flowRunner("dataSourcePooling").withPayload(TEST_MESSAGE).asynchronously().run();
 
     MuleClient client = muleContext.getClient();
-    MuleMessage response = client.request("test://testOut", RECEIVE_TIMEOUT);
-    assertThat(response.getExceptionPayload(), is(nullValue()));
-
-    response = client.request("test://testOut", RECEIVE_TIMEOUT);
-    assertThat(response.getExceptionPayload(), is(nullValue()));
+    client.request("test://testOut", RECEIVE_TIMEOUT).getRight().get();
+    client.request("test://testOut", RECEIVE_TIMEOUT).getRight().get();
   }
 }

@@ -7,19 +7,13 @@
 
 package org.mule.compatibility.transport.tcp.integration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+
 import org.mule.compatibility.module.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.api.FutureMessageResult;
 import org.mule.runtime.core.api.MuleMessage;
-
-import java.util.concurrent.TimeoutException;
-
-import org.junit.Test;
 
 public class TcpConnectionTimeoutTestCase extends FunctionalTestCase {
 
@@ -33,14 +27,8 @@ public class TcpConnectionTimeoutTestCase extends FunctionalTestCase {
     final MuleClient client = new MuleClient(muleContext);
     FutureMessageResult result = client.sendAsync("vm://testInput", TEST_MESSAGE, null);
 
-    MuleMessage message = null;
-    try {
-      message = result.getMessage(1000);
-    } catch (TimeoutException e) {
-      fail("Connection timeout not honored.");
-    }
+    Error error = result.getResult(1000).getLeft();
+    //TODO check error type
 
-    assertThat(message.getPayload(), is(nullValue()));
-    assertNotNull(message.getExceptionPayload());
   }
 }

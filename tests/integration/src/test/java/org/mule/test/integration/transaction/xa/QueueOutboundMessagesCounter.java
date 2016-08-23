@@ -20,7 +20,7 @@ public class QueueOutboundMessagesCounter implements TransactionScenarios.Outbou
   public int numberOfMessagesThatArrived() throws Exception {
     MuleMessage muleMessage;
     while (true) {
-      muleMessage = muleClient.request("outboundRequester", 100);
+      muleMessage = muleClient.request("outboundRequester", 100).getRight().get();
       if (muleMessage != null) {
         numberOfMessagesArrived++;
       } else {

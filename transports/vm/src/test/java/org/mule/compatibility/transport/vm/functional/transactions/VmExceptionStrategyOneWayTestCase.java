@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.api.client.MuleClient;
@@ -54,29 +55,21 @@ public class VmExceptionStrategyOneWayTestCase extends FunctionalTestCase {
   @Test
   public void testDeadLetterQueueWithInboundEndpointException() throws Exception {
     MuleClient muleClient = muleContext.getClient();
-    MuleMessage response = muleClient.send("vm://in1", ORIGINAL_MESSAGE, null);
+    Error error = muleClient.send("vm://in1", ORIGINAL_MESSAGE, null).getLeft();
     if (!deadLetterQueueLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
       fail("dead letter queue must be reached");
     }
     assertThat(outboundComponentReached, Is.is(false));
-    assertThat(response, IsNull.<Object>notNullValue());
-    assertThat(response.getPayload(), is(nullValue()));
-    assertThat(response.getExceptionPayload(), IsNull.<Object>notNullValue());
-    assertThat(response.getExceptionPayload(), IsInstanceOf.instanceOf(DefaultExceptionPayload.class));
   }
 
   @Test
   public void testDeadLetterQueueWithInboundEndpointResponseException() throws Exception {
     MuleClient muleClient = muleContext.getClient();
-    MuleMessage response = muleClient.send("vm://in2", ORIGINAL_MESSAGE, null);
+    muleClient.send("vm://in2", ORIGINAL_MESSAGE, null).getLeft();
     // TODO PLG - ES - fix this, DLQ call fails since tx was resolved already
     /*
      * if (!deadLetterQueueLatch.await(TIMEOUT, MILLISECONDS)) { fail("dead letter queue must be reached"); }
      */
-    assertThat(response, IsNull.<Object>notNullValue());
-    assertThat(response.getPayload(), is(nullValue()));
-    assertThat(response.getExceptionPayload(), IsNull.<Object>notNullValue());
-    assertThat(response.getExceptionPayload(), IsInstanceOf.instanceOf(DefaultExceptionPayload.class));
     if (!outboundComponentLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
       fail("outbound component not reached");
     }
@@ -85,29 +78,21 @@ public class VmExceptionStrategyOneWayTestCase extends FunctionalTestCase {
   @Test
   public void testDeadLetterQueueWithComponentException() throws Exception {
     MuleClient muleClient = muleContext.getClient();
-    MuleMessage response = muleClient.send("vm://in3", ORIGINAL_MESSAGE, null);
+    Error error = muleClient.send("vm://in3", ORIGINAL_MESSAGE, null).getLeft();
     if (!deadLetterQueueLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
       fail("dead letter queue must be reached");
     }
     assertThat(outboundComponentReached, Is.is(false));
-    assertThat(response, IsNull.<Object>notNullValue());
-    assertThat(response.getPayload(), is(nullValue()));
-    assertThat(response.getExceptionPayload(), IsNull.<Object>notNullValue());
-    assertThat(response.getExceptionPayload(), IsInstanceOf.instanceOf(DefaultExceptionPayload.class));
   }
 
   @Test
   public void testDeadLetterQueueWithOutboundEndpointException() throws Exception {
     MuleClient muleClient = muleContext.getClient();
-    MuleMessage response = muleClient.send("vm://in4", ORIGINAL_MESSAGE, null);
+    Error error = muleClient.send("vm://in4", ORIGINAL_MESSAGE, null).getLeft();
     if (!deadLetterQueueLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
       fail("dead letter queue must be reached");
     }
     assertThat(outboundComponentReached, Is.is(false));
-    assertThat(response, IsNull.<Object>notNullValue());
-    assertThat(response.getPayload(), is(nullValue()));
-    assertThat(response.getExceptionPayload(), IsNull.<Object>notNullValue());
-    assertThat(response.getExceptionPayload(), IsInstanceOf.instanceOf(DefaultExceptionPayload.class));
   }
 
   public static class FailingTransformer extends AbstractTransformer {
@@ -125,7 +110,6 @@ public class VmExceptionStrategyOneWayTestCase extends FunctionalTestCase {
       deadLetterQueueLatch.release();
       MuleMessage message = eventContext.getMessage();
       assertThat(message, IsNull.<Object>notNullValue());
-      assertThat(message.getExceptionPayload(), IsNull.<Object>nullValue());
       assertThat(message.getPayload(), IsInstanceOf.instanceOf(ExceptionMessage.class));
       return eventContext.getMessage();
     }

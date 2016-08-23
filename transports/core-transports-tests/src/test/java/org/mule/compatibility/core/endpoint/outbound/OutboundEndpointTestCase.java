@@ -336,7 +336,6 @@ public class OutboundEndpointTestCase extends AbstractMessageProcessorTestCase {
     assertThat(actual.getPayload(), equalTo(expect.getPayload()));
     assertEquals(expect.getDataType(), actual.getDataType());
     assertEquals(expect.getUniqueId(), actual.getUniqueId());
-    assertEquals(expect.getExceptionPayload(), actual.getExceptionPayload());
   }
 
   protected OutboundEndpoint createOutboundEndpoint(String uri, Filter filter,

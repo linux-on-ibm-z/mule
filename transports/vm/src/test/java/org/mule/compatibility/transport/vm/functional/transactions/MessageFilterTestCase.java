@@ -41,20 +41,20 @@ public class MessageFilterTestCase extends FunctionalTestCase {
   public void testConfiguration() throws Exception {
     MuleClient client = muleContext.getClient();
 
-    MuleMessage response = client.send("vm://order.validation", "OK", null);
+    MuleMessage response = client.send("vm://order.validation", "OK", null).getRight();
     assertNull(response);
     assertEquals("OK(rejected!-1)", rejectMesage);
 
-    response = client.send("vm://order.validation", "OK-ABC", null);
+    response = client.send("vm://order.validation", "OK-ABC", null).getRight();
     assertNull(response);
     assertEquals("OK-ABC(rejected!-2)", rejectMesage);
 
-    response = client.send("vm://order.validation", "OK-DEF", null);
+    response = client.send("vm://order.validation", "OK-DEF", null).getRight();
     assertNull(response);
     assertEquals("OK-DEF(rejected!-1)", rejectMesage);
     rejectMesage = null;
 
-    response = client.send("vm://order.validation", "OK-ABC-DEF", null);
+    response = client.send("vm://order.validation", "OK-ABC-DEF", null).getRight();
     assertEquals("OK-ABC-DEF(success)", getPayloadAsString(response));
     assertNull(rejectMesage);
   }
