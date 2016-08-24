@@ -51,7 +51,8 @@ public class TestArtifactClassLoader extends TestClassLoader implements Artifact
     return super.findResources(name);
   }
 
-  @Override public Class<?> findClass(String name) throws ClassNotFoundException {
+  @Override
+  public Class<?> findClass(String name) throws ClassNotFoundException {
     return null;
   }
 }

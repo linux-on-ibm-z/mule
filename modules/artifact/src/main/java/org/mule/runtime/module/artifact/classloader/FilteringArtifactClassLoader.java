@@ -114,7 +114,8 @@ public class FilteringArtifactClassLoader extends ClassLoader implements Artifac
     return artifactClassLoader.findResources(name);
   }
 
-  @Override public Class<?> findClass(String name) throws ClassNotFoundException {
+  @Override
+  public Class<?> findClass(String name) throws ClassNotFoundException {
     return artifactClassLoader.findClass(name);
   }
 

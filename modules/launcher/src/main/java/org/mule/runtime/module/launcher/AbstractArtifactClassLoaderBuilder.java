@@ -144,16 +144,19 @@ public abstract class AbstractArtifactClassLoaderBuilder<T extends AbstractArtif
     checkState(artifactDescriptor != null, "artifact descriptor cannot be null");
     parentClassLoader = getParentClassLoader();
     checkState(parentClassLoader != null, "parent class loader cannot be null");
-    RegionClassLoader regionClassLoader = new RegionClassLoader("Region", new URL[0], parentClassLoader.getClassLoader(), parentClassLoader.getClassLoaderLookupPolicy());
+    RegionClassLoader regionClassLoader = new RegionClassLoader("Region", new URL[0], parentClassLoader.getClassLoader(),
+                                                                parentClassLoader.getClassLoaderLookupPolicy());
 
     List<ArtifactPluginDescriptor> effectiveArtifactPluginDescriptors = createContainerApplicationPlugins();
     effectiveArtifactPluginDescriptors.addAll(artifactPluginDescriptors);
-    final List<ArtifactClassLoader> pluginClassLoaders = createPluginClassLoaders(regionClassLoader, effectiveArtifactPluginDescriptors);
-    final ArtifactClassLoader artifactClassLoader = artifactClassLoaderFactory.create(regionClassLoader, artifactDescriptor, artifactPluginClassLoaders);
+    final List<ArtifactClassLoader> pluginClassLoaders =
+        createPluginClassLoaders(regionClassLoader, effectiveArtifactPluginDescriptors);
+    final ArtifactClassLoader artifactClassLoader =
+        artifactClassLoaderFactory.create(regionClassLoader, artifactDescriptor, artifactPluginClassLoaders);
 
     regionClassLoader.addClassLoader(artifactClassLoader, emptySet(), emptySet());
 
-    for (int i= 0; i < effectiveArtifactPluginDescriptors.size(); i++) {
+    for (int i = 0; i < effectiveArtifactPluginDescriptors.size(); i++) {
       final ArtifactClassLoaderFilter classLoaderFilter = effectiveArtifactPluginDescriptors.get(i).getClassLoaderFilter();
       regionClassLoader.addClassLoader(pluginClassLoaders.get(i), classLoaderFilter.getExportedClassPackages(),
                                        classLoaderFilter.getExportedResources());

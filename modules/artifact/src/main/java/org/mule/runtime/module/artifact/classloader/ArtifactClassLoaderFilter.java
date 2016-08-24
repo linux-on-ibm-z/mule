@@ -92,8 +92,7 @@ public class ArtifactClassLoaderFilter implements ClassLoaderFilter {
     return exportedClassPackages;
   }
 
-  public Set<String> getExportedResources()
-  {
+  public Set<String> getExportedResources() {
     return exportedResources;
   }
 

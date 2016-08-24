@@ -161,7 +161,8 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
           .containingResource("pluginResourceSource.properties", "pluginResource.properties");
 
   private final ArtifactPluginFileBuilder pluginUsingAppResource =
-    new ArtifactPluginFileBuilder("appResourcePlugin").configuredWith(EXPORTED_CLASS_PACKAGES_PROPERTY, "org.foo.resource").containingClass("org/foo/resource/ResourceConsumer.clazz");
+      new ArtifactPluginFileBuilder("appResourcePlugin").configuredWith(EXPORTED_CLASS_PACKAGES_PROPERTY, "org.foo.resource")
+          .containingClass("org/foo/resource/ResourceConsumer.clazz");
 
   // Application file builders
   private final ApplicationFileBuilder emptyAppFileBuilder =
@@ -1599,7 +1600,9 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
 
   @Test
   public void deploysAppProvidingResourceForPlugin() throws Exception {
-    final TestArtifactDescriptor artifactFileBuilder = new ApplicationFileBuilder("appProvidingResourceForPlugin").definedBy("app-providing-resource-for-plugin.xml").containingPlugin(pluginUsingAppResource).usingResource("test-resource.txt", "META-INF/app-resource.txt");
+    final TestArtifactDescriptor artifactFileBuilder =
+        new ApplicationFileBuilder("appProvidingResourceForPlugin").definedBy("app-providing-resource-for-plugin.xml")
+            .containingPlugin(pluginUsingAppResource).usingResource("test-resource.txt", "META-INF/app-resource.txt");
     addPackedAppFromBuilder(artifactFileBuilder);
 
     startDeployment();
@@ -1614,7 +1617,8 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
                                           mainFlow));
   }
 
-  @Override public int getTestTimeoutSecs() {
+  @Override
+  public int getTestTimeoutSecs() {
     //TODO(pablo.kraan): isolation - remove this method!!!
     return 120000;
   }
