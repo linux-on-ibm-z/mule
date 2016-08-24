@@ -1545,6 +1545,24 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
   }
 
   @Test
+  public void deploysApplicationWithPluginDependingOnPlugin() throws Exception {
+
+    ArtifactPluginFileBuilder dependantPlugin =
+        new ArtifactPluginFileBuilder("dependantPlugin").configuredWith(EXPORTED_CLASS_PACKAGES_PROPERTY, "org.foo.echo")
+            .containingClass("org/foo/echo/Plugin3Echo.clazz");
+
+    final TestArtifactDescriptor artifactFileBuilder = new ApplicationFileBuilder("plugin-depending-on-plugin-app")
+        .definedBy("plugin-depending-on-plugin-app-config.xml").containingPlugin(echoPlugin).containingPlugin(dependantPlugin);
+    addPackedAppFromBuilder(artifactFileBuilder);
+
+    startDeployment();
+
+    assertDeploymentSuccess(applicationDeploymentListener, artifactFileBuilder.getId());
+
+    executeApplicationFlow("main");
+  }
+
+  @Test
   public void deploysAppWithLibDifferentThanPlugin() throws Exception {
     addPackedAppFromBuilder(differentLibPluginAppFileBuilder);
 
