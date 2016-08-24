@@ -1410,11 +1410,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     assertAppsDir(NONE, new String[] {sharedLibPluginAppFileBuilder.getId()}, true);
     assertApplicationAnchorFileExists(sharedLibPluginAppFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(create(mainFlow), muleMessage, REQUEST_RESPONSE, mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Test
@@ -1436,12 +1432,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     assertAppsDir(NONE, new String[] {sharedLibPluginAppPrecedenceFileBuilder.getId()}, true);
     assertApplicationAnchorFileExists(sharedLibPluginAppPrecedenceFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,
-                                          mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Test
@@ -1500,12 +1491,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     assertDeploymentSuccess(domainDeploymentListener, domainFileBuilder.getId());
     assertApplicationDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,
-                                          mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Test
@@ -1523,12 +1509,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     assertDeploymentSuccess(domainDeploymentListener, domainFileBuilder.getId());
     assertApplicationDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,
-                                          mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Test
@@ -1549,12 +1530,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     assertDeploymentSuccess(domainDeploymentListener, domainFileBuilder.getId());
     assertApplicationDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,
-                                          mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Test
@@ -1565,12 +1541,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
 
     assertDeploymentSuccess(applicationDeploymentListener, multiLibPluginAppFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,
-                                          mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Test
@@ -1581,12 +1552,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
 
     assertDeploymentSuccess(applicationDeploymentListener, differentLibPluginAppFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,
-                                          mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Test
@@ -1609,12 +1575,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
 
     assertDeploymentSuccess(applicationDeploymentListener, artifactFileBuilder.getId());
 
-    Application application = deploymentService.getApplications().get(0);
-    Flow mainFlow = (Flow) application.getMuleContext().getRegistry().lookupFlowConstruct("main");
-    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
-
-    mainFlow.process(new DefaultMuleEvent(create(mainFlow), muleMessage, REQUEST_RESPONSE,
-                                          mainFlow));
+    executeApplicationFlow("main");
   }
 
   @Override
@@ -3215,6 +3176,15 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     File appFolder = new File(artifactDir, artifactName);
     prober.check(new FileExists(appFolder));
   }
+
+  private void executeApplicationFlow(String flowName) throws MuleException {
+    Flow mainFlow = (Flow) deploymentService.getApplications().get(0).getMuleContext().getRegistry().lookupFlowConstruct(flowName);
+    MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
+
+    mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,
+                                          mainFlow));
+  }
+
 
   /**
    * Allows to execute custom actions before or after executing logic or checking preconditions / verifications.
