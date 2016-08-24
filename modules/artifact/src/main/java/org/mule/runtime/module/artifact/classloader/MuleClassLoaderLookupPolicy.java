@@ -98,6 +98,7 @@ public class MuleClassLoaderLookupPolicy implements ClassLoaderLookupPolicy {
           } else {
             lookupStrategy = CHILD_FIRST;
           }
+          //TODO(pablo.kraan): isolation - I don't like having to extend the policy here. It will be better to do it on creation time, though
           lookupStrategies.put(packageName, lookupStrategy);
         }
       }

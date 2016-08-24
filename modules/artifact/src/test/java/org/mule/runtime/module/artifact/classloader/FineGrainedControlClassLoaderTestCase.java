@@ -173,7 +173,7 @@ public class FineGrainedControlClassLoaderTestCase extends AbstractMuleTestCase 
     return new FineGrainedControlClassLoader(new URL[0], parent, lookupPolicy) {
 
       @Override
-      protected Class<?> findClass(String name) throws ClassNotFoundException {
+      public Class<?> findClass(String name) throws ClassNotFoundException {
         try {
           return super.findClass(name);
         } catch (ClassNotFoundException e) {

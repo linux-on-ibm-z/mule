@@ -9,13 +9,14 @@ package org.mule.runtime.module.launcher.application;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppClassesFolder;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppLibFolder;
+import static org.mule.runtime.container.api.MuleFoldersUtil.getAppSharedPluginLibsFolder;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getMulePerAppLibFolder;
+import org.mule.runtime.core.util.SystemUtils;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.DeployableArtifactClassLoaderFactory;
 import org.mule.runtime.module.launcher.MuleApplicationClassLoader;
 import org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.launcher.nativelib.NativeLibraryFinderFactory;
-import org.mule.runtime.core.util.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
                                     List<ArtifactClassLoader> artifactPluginClassLoders) {
     List<URL> urls = getApplicationResourceUrls(descriptor);
 
+    //TODO(pablo.kraan): isolation - need to extend the loopkup policy including the jars from the app
     return new MuleApplicationClassLoader(descriptor.getName(), parent.getClassLoader(),
                                           nativeLibraryFinderFactory.create(descriptor.getName()), urls,
                                           parent.getClassLoaderLookupPolicy(), artifactPluginClassLoders);
@@ -57,6 +59,7 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
     try {
       urls.add(getAppClassesFolder(descriptor.getName()).toURI().toURL());
       urls.addAll(findJars(descriptor.getName(), getAppLibFolder(descriptor.getName()), true));
+      urls.addAll(findJars(descriptor.getName(), getAppSharedPluginLibsFolder(descriptor.getName()), true));
       urls.addAll(findJars(descriptor.getName(), getMulePerAppLibFolder(), true));
     } catch (IOException e) {
       throw new RuntimeException("Unable to create classloader for application", e);

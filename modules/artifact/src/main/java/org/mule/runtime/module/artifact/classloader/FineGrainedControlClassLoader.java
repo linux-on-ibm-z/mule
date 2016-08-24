@@ -10,7 +10,6 @@ import static java.util.Arrays.asList;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_FIRST;
 import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_ONLY;
-
 import org.mule.runtime.module.artifact.classloader.exception.CompositeClassNotFoundException;
 
 import java.net.URL;
@@ -88,7 +87,7 @@ public class FineGrainedControlClassLoader extends GoodCitizenClassLoader implem
   }
 
   @Override
-  protected Class<?> findClass(String name) throws ClassNotFoundException {
+  public Class<?> findClass(String name) throws ClassNotFoundException {
     synchronized (getClassLoadingLock(name)) {
       Class<?> result = findLoadedClass(name);
 

@@ -87,6 +87,15 @@ public abstract class AbstractArtifactFileBuilder<T extends AbstractArtifactFile
     return getThis();
   }
 
+  public T usingResource(String resourceFile, String targetFile)
+  {
+    checkImmutable();
+    checkArgument(!StringUtils.isEmpty(resourceFile), "Resource file cannot be empty");
+    resources.add(new ZipResource(resourceFile, "classes/" + targetFile));
+
+    return getThis();
+  }
+
   /**
    * Indicates that the generated artifact file must be a corrupted ZIP.
    *

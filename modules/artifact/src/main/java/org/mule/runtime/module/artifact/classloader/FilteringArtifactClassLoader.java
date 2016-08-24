@@ -114,6 +114,10 @@ public class FilteringArtifactClassLoader extends ClassLoader implements Artifac
     return artifactClassLoader.findResources(name);
   }
 
+  @Override public Class<?> findClass(String name) throws ClassNotFoundException {
+    return artifactClassLoader.findClass(name);
+  }
+
   @Override
   public String toString() {
     return format("%s[%s]@%s", getClass().getName(), artifactClassLoader.getArtifactName(), toHexString(identityHashCode(this)));

@@ -92,6 +92,11 @@ public class ArtifactClassLoaderFilter implements ClassLoaderFilter {
     return exportedClassPackages;
   }
 
+  public Set<String> getExportedResources()
+  {
+    return exportedResources;
+  }
+
   private String sanitizeResourceName(String resourceName) {
     String sanitizedResource = "";
     if (resourceName.length() > 0) {

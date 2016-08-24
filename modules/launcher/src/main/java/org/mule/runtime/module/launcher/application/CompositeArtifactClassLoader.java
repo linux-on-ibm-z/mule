@@ -102,6 +102,11 @@ public class CompositeArtifactClassLoader extends CompositeClassLoader implement
     return new EnumerationAdapter<>(resources.values());
   }
 
+  @Override public Class<?> findClass(String name) throws ClassNotFoundException {
+    //TODO(pablo.kraan): isolation - implement this
+    throw new UnsupportedOperationException();
+  }
+
   @Override
   public URL findLocalResource(String resourceName) {
     for (ArtifactClassLoader artifactClassLoader : artifactClassLoaders) {

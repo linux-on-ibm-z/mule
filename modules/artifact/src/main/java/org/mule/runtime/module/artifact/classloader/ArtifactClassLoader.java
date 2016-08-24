@@ -33,6 +33,8 @@ public interface ArtifactClassLoader extends DisposableClassLoader, LocalResourc
    */
   Enumeration<URL> findResources(final String name) throws IOException;
 
+  Class<?> findClass(String name) throws ClassNotFoundException;
+
   /**
    * ClassLoader is an abstract class. Not an interface. There are parts of the code that requires a ClassLoader and others that
    * requires an ArtifactClassLoader. Ideally I would make ArtifactClassLoader implement ClassLoader interface but there's no such

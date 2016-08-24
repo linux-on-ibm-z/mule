@@ -183,6 +183,10 @@ public class DomainClassLoaderFactory implements DeployableArtifactClassLoaderFa
         return classLoader.findResources(name);
       }
 
+      @Override public Class<?> findClass(String name) throws ClassNotFoundException {
+        return null;
+      }
+
       @Override
       public URL findLocalResource(String resource) {
         return classLoader.findLocalResource(resource);
