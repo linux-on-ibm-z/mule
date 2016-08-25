@@ -185,8 +185,6 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
       .definedBy("multi-plugin-app-config.xml").containingPlugin(echoPluginWithLib1).containingPlugin(echoPluginWithLib2);
   private final ApplicationFileBuilder resourcePluginAppFileBuilder = new ApplicationFileBuilder("dummyWithPluginResource")
       .definedBy("plugin-resource-app-config.xml").containingPlugin(pluginWithResource);
-  private final ApplicationFileBuilder sharedLibPluginAppFileBuilder = new ApplicationFileBuilder("shared-plugin-lib-app")
-      .definedBy("app-with-echo1-plugin-config.xml").containingPlugin(echoPluginWithoutLib1).sharingLibrary("lib/bar-1.0.jar");
   private final ApplicationFileBuilder brokenAppWithFunkyNameAppFileBuilder =
       new ApplicationFileBuilder("broken-app+", brokenAppFileBuilder);
   private final ApplicationFileBuilder dummyDomainApp1FileBuilder =
@@ -1401,14 +1399,17 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
   }
 
   @Test
-  public void deploysAppWithPluginSharedLibrary() throws Exception {
-    addPackedAppFromBuilder(sharedLibPluginAppFileBuilder);
+  public void deploysAppWithPluginUsingAppLibrary() throws Exception {
+    final ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder("shared-lib-app")
+        .definedBy("app-with-echo1-plugin-config.xml").containingPlugin(echoPluginWithoutLib1).usingLibrary("lib/bar-1.0.jar");
+
+    addPackedAppFromBuilder(applicationFileBuilder);
 
     startDeployment();
 
-    assertApplicationDeploymentSuccess(applicationDeploymentListener, sharedLibPluginAppFileBuilder.getId());
-    assertAppsDir(NONE, new String[] {sharedLibPluginAppFileBuilder.getId()}, true);
-    assertApplicationAnchorFileExists(sharedLibPluginAppFileBuilder.getId());
+    assertApplicationDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
+    assertAppsDir(NONE, new String[] {applicationFileBuilder.getId()}, true);
+    assertApplicationAnchorFileExists(applicationFileBuilder.getId());
 
     executeApplicationFlow("main");
   }
@@ -1452,24 +1453,6 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     startDeployment();
 
     assertDeploymentFailure(applicationDeploymentListener, applicationFileBuilder.getId());
-  }
-
-  @Test
-  public void deploysDomainWithSharedLibPrecedenceOverApplicationSharedLib() throws Exception {
-    final String domainId = "shared-lib";
-    final ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder("shared-lib-precedence-app")
-        .definedBy("app-shared-lib-precedence-config.xml").sharingLibrary("lib/bar-2.0.jar")
-        .containingClass("org/foo/Plugin1Echo.clazz").deployedWith(PROPERTY_DOMAIN, domainId);
-    final DomainFileBuilder domainFileBuilder =
-        new DomainFileBuilder(domainId).usingLibrary("lib/bar-1.0.jar").containing(applicationFileBuilder);
-
-    addPackedDomainFromBuilder(domainFileBuilder);
-    startDeployment();
-
-    assertDeploymentSuccess(domainDeploymentListener, domainFileBuilder.getId());
-    assertApplicationDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
-
-    executeApplicationFlow("main");
   }
 
   @Test

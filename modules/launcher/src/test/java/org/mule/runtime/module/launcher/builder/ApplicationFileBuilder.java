@@ -11,10 +11,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor.DEFAULT_APP_PROPERTIES_RESOURCE;
 import static org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor.DEFAULT_CONFIGURATION_RESOURCE;
 import static org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor.DEFAULT_DEPLOY_PROPERTIES_RESOURCE;
+import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.module.artifact.builder.AbstractArtifactFileBuilder;
 import org.mule.tck.ZipUtils.ZipResource;
-import org.mule.runtime.core.util.FilenameUtils;
-import org.mule.runtime.core.util.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -133,20 +132,6 @@ public class ApplicationFileBuilder extends AbstractArtifactFileBuilder<Applicat
     checkImmutable();
     checkArgument(plugin != null, "Plugin cannot be null");
     this.plugins.add(plugin);
-
-    return this;
-  }
-
-  /**
-   * Adds a jar file to the application plugin lib folder.
-   *
-   * @param jarFile jar file from a external file or test resource.
-   * @return the same builder instance
-   */
-  public ApplicationFileBuilder sharingLibrary(String jarFile) {
-    checkImmutable();
-    checkArgument(!StringUtils.isEmpty(jarFile), "Jar file cannot be empty");
-    resources.add(new ZipResource(jarFile, "plugins/lib/" + FilenameUtils.getName(jarFile)));
 
     return this;
   }

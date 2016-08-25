@@ -90,10 +90,6 @@ public class MuleFoldersUtil {
     return new File(getAppFolder(appName), PLUGINS_FOLDER);
   }
 
-  public static File getAppSharedPluginLibsFolder(String appName) {
-    return new File(getAppPluginsFolder(appName), LIB_FOLDER);
-  }
-
   public static File getExecutionFolder() {
     return new File(getMuleHomeFolder(), EXECUTION_FOLDER);
   }
@@ -108,10 +104,6 @@ public class MuleFoldersUtil {
 
   public static File getMulePerAppLibFolder() {
     return new File(getMuleLibFolder(), PER_APP_LIB_FOLDER);
-  }
-
-  public static File getAppTempFolder(String appName) {
-    return new File(getExecutionFolder(), appName);
   }
 
   public static File getContainerAppPluginsFolder() {

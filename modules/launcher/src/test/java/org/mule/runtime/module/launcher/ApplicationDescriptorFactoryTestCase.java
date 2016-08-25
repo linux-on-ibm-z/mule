@@ -11,16 +11,14 @@ import static org.apache.commons.io.FileUtils.copyFile;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppFolder;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppPluginsFolder;
-import org.mule.runtime.container.api.MuleFoldersUtil;
+import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
 import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
@@ -91,21 +89,6 @@ public class ApplicationDescriptorFactoryTestCase extends AbstractMuleTestCase {
     assertThat(plugins.size(), equalTo(2));
     assertThat(plugins, hasItem(equalTo(expectedPluginDescriptor1)));
     assertThat(plugins, hasItem(equalTo(expectedPluginDescriptor2)));
-  }
-
-  @Test
-  public void readsSharedPluginLibs() throws Exception {
-    File pluginLibDir = MuleFoldersUtil.getAppSharedPluginLibsFolder(APP_NAME);
-    pluginLibDir.mkdirs();
-
-    copyResourceAs("test-jar-with-resources.jar", pluginLibDir, JAR_FILE_NAME);
-    ApplicationDescriptor desc =
-        new ApplicationDescriptorFactory(new ArtifactPluginDescriptorLoader(new ArtifactPluginDescriptorFactory(new DefaultArtifactClassLoaderFilterFactory())),
-                                         applicationPluginRepository).create(getAppFolder(APP_NAME));
-
-    File sharedPluginFolder = desc.getSharedPluginFolder();
-
-    assertThat(sharedPluginFolder.getAbsolutePath(), is(pluginLibDir.getAbsolutePath()));
   }
 
   @Test
