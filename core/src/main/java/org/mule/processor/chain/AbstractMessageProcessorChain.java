@@ -27,11 +27,13 @@ import org.mule.api.processor.MessageProcessorChain;
 import org.mule.api.processor.MessageProcessorContainer;
 import org.mule.api.processor.MessageProcessorPathElement;
 import org.mule.endpoint.EndpointAware;
+import org.mule.processor.AbstractInterceptingMessageProcessorBase;
 import org.mule.processor.NonBlockingMessageProcessor;
 import org.mule.util.NotificationUtils;
 import org.mule.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -205,10 +207,47 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
         }
     }
 
+    private List<MessageProcessor> getInnerProcessors(MessageProcessor processor)
+    {
+        ArrayList<MessageProcessor> processors = new ArrayList<MessageProcessor>();
+        if (!(processor instanceof AbstractInterceptingMessageProcessorBase))
+        {
+            return processors;
+        }
+
+        MessageProcessor innerProcessor = ((AbstractInterceptingMessageProcessorBase) processor).getListener();
+        if (innerProcessor != null)
+        {
+            processors.addAll(
+                    getAllChainedMessageProcessors(Collections.singletonList(innerProcessor))
+            );
+        }
+        return processors;
+    }
+
+    private List<MessageProcessor> getAllChainedMessageProcessors(List<MessageProcessor> processors)
+    {
+        ArrayList <MessageProcessor> allProcessors = new ArrayList<MessageProcessor>();
+        for (MessageProcessor processor : processors)
+        {
+            allProcessors.add(processor);
+            allProcessors.addAll(getInnerProcessors(processor));
+
+            if (processor instanceof AbstractMessageProcessorChain)
+            {
+                for (MessageProcessor p : ((AbstractMessageProcessorChain) processor).processors)
+                {
+                    allProcessors.addAll(getInnerProcessors(p));
+                }
+            }
+        }
+        return allProcessors;
+    }
+
     @Override
     public List<MessageProcessor> getMessageProcessors()
     {
-        return processors;
+        return getAllChainedMessageProcessors(processors);
     }
 
     @Override

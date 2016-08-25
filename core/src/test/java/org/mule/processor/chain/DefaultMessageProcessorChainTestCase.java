@@ -39,6 +39,7 @@ import org.mule.api.construct.FlowConstructAware;
 import org.mule.api.construct.Pipeline;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.endpoint.OutboundEndpoint;
+import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.Lifecycle;
 import org.mule.api.processor.MessageProcessor;
@@ -61,6 +62,7 @@ import org.mule.tck.size.SmallTest;
 import org.mule.transformer.simple.StringAppendTransformer;
 import org.mule.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -681,6 +683,59 @@ public class DefaultMessageProcessorChainTestCase extends AbstractMuleTestCase
                 .getPayload());
 
         assertEquals(1, threads);
+    }
+
+    @Test
+    // When there are no IMPs in the chain, all the processors are returned
+    public void testMPChainReturnsAllProcessors() throws Exception {
+        DefaultMessageProcessorChainBuilder builder = new DefaultMessageProcessorChainBuilder();
+        builder.chain(getAppendingMP("1"), getAppendingMP("2"), getAppendingMP("3"));
+        assertEquals(3, builder.build().getMessageProcessors().size());
+    }
+
+    @Test
+    // When there are only IMPs in the chain, all the processors are returned
+    public void testInterceptingMPChainReturnsAllProcessors() throws Exception {
+        DefaultMessageProcessorChainBuilder builder = new DefaultMessageProcessorChainBuilder();
+        builder.chain(new AppendingInterceptingMP("1"), new AppendingInterceptingMP("2"),
+                new AppendingInterceptingMP("3"));
+        assertEquals(3, builder.build().getMessageProcessors().size());
+    }
+
+    @Test
+    // When there are IMPs mixed with other MPs, all the first level MPs are returned
+    public void testMixedMPChainReturnsAllProcessors() throws Exception {
+        DefaultMessageProcessorChainBuilder builder = new DefaultMessageProcessorChainBuilder();
+        ArrayList<AppendingMP> apMPs = new ArrayList<AppendingMP>();
+        apMPs.add(getAppendingMP("1"));
+        apMPs.add(getAppendingMP("2"));
+        apMPs.add(getAppendingMP("3"));
+        apMPs.add(getAppendingMP("4"));
+
+        ArrayList<AppendingInterceptingMP> apIntMPs = new ArrayList<AppendingInterceptingMP>();
+        apIntMPs.add(new AppendingInterceptingMP("1"));
+        apIntMPs.add(new AppendingInterceptingMP("2"));
+        apIntMPs.add(new AppendingInterceptingMP("3"));
+
+        builder.chain(apMPs.get(0), apIntMPs.get(0), apIntMPs.get(1), apMPs.get(1), apMPs.get(2), apIntMPs.get(2),
+                apMPs.get(3));
+
+        List<MessageProcessor> processors = builder.build().getMessageProcessors();
+
+        assertEquals(5, processors.size());
+
+        for (MessageProcessor processor : processors){
+            ((Initialisable) processor).initialise();
+        }
+
+        for (AppendingMP apMP : apMPs)
+        {
+            assertTrue(apMP.initialised);
+        }
+        for (AppendingInterceptingMP apIntMP : apIntMPs)
+        {
+            assertTrue(apIntMP.initialised);
+        }
     }
 
     @Test
