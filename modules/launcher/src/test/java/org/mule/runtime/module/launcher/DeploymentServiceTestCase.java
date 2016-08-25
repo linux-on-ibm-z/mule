@@ -1414,28 +1414,6 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
   }
 
   @Test
-  @Ignore
-  public void deploysAppWithAppSharedLibPrecedenceOverPluginLib() throws Exception {
-    //TODO(pablo.kraan): isolation - this test is not valid anymore. Review the impact of the change
-    final ArtifactPluginFileBuilder echoPlugin1WithLib2 =
-        new ArtifactPluginFileBuilder("echoPlugin1").configuredWith(EXPORTED_CLASS_PACKAGES_PROPERTY, "org.foo")
-            .containingClass("org/foo/Plugin1Echo.clazz").usingLibrary("lib/bar-2.0.jar");
-    final ApplicationFileBuilder sharedLibPluginAppPrecedenceFileBuilder =
-        new ApplicationFileBuilder("shared-plugin-lib-precedence-app").definedBy("app-shared-lib-precedence-config.xml")
-            .containingPlugin(echoPlugin1WithLib2).sharingLibrary("lib/bar-1.0.jar");
-
-    addPackedAppFromBuilder(sharedLibPluginAppPrecedenceFileBuilder);
-
-    startDeployment();
-
-    assertApplicationDeploymentSuccess(applicationDeploymentListener, sharedLibPluginAppPrecedenceFileBuilder.getId());
-    assertAppsDir(NONE, new String[] {sharedLibPluginAppPrecedenceFileBuilder.getId()}, true);
-    assertApplicationAnchorFileExists(sharedLibPluginAppPrecedenceFileBuilder.getId());
-
-    executeApplicationFlow("main");
-  }
-
-  @Test
   public void deploysAppZipWithExtensionPlugin() throws Exception {
     // TODO(pablo.kraan): MULE-10148 - avoid using pre-compiled jars and classes
     final ServiceFileBuilder echoService =
@@ -1594,12 +1572,6 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     assertDeploymentSuccess(applicationDeploymentListener, artifactFileBuilder.getId());
 
     executeApplicationFlow("main");
-  }
-
-  @Override
-  public int getTestTimeoutSecs() {
-    //TODO(pablo.kraan): isolation - remove this method!!!
-    return 120000;
   }
 
   @Test
@@ -3196,7 +3168,8 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
   }
 
   private void executeApplicationFlow(String flowName) throws MuleException {
-    Flow mainFlow = (Flow) deploymentService.getApplications().get(0).getMuleContext().getRegistry().lookupFlowConstruct(flowName);
+    Flow mainFlow =
+        (Flow) deploymentService.getApplications().get(0).getMuleContext().getRegistry().lookupFlowConstruct(flowName);
     MuleMessage muleMessage = MuleMessage.builder().payload(TEST_MESSAGE).build();
 
     mainFlow.process(new DefaultMuleEvent(DefaultMessageContext.create(mainFlow, TEST_CONNECTOR), muleMessage, REQUEST_RESPONSE,

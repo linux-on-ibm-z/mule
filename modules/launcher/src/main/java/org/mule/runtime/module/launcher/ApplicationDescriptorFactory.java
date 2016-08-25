@@ -126,7 +126,7 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
       }
     }
 
-    // TODO(pablo.kraan): MULE-9649 - de add validation when a decision is made about how to, in a plugin,
+    // TODO(pablo.kraan): MULE-9649 - re-add validation when a decision is made about how to, in a plugin,
   }
 
   private Set<ArtifactPluginDescriptor> parsePluginDescriptors(File appDir, ApplicationDescriptor appDescriptor)

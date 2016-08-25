@@ -47,11 +47,12 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
     if (artifactClassLoader != null) {
       return artifactClassLoader.findClass(name);
     } else {
-      // TODO(pablo.kraan): add a new policy map if found
+      // TODO(pablo.kraan): isolation - add a new policy map if found
       return classLoaders.get(0).findClass(name);
     }
   }
 
+  @Override
   public final URL findResource(final String name) {
     URL resource;
     final ArtifactClassLoader artifactClassLoader = resourceMapping.get(name);
@@ -63,6 +64,7 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
     return resource;
   }
 
+  @Override
   public final Enumeration<URL> findResources(final String name) throws IOException {
     final Enumeration<URL> resources;
     final ArtifactClassLoader artifactClassLoader = resourceMapping.get(name);
@@ -73,31 +75,4 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
     }
     return resources;
   }
-
-  //public final URL getResource(final String name) {
-  //  URL resource = getParent().getResource(name);
-  //  if (resource == null) {
-  //    final ArtifactClassLoader artifactClassLoader = resourceMapping.get(name);
-  //    if (artifactClassLoader != null) {
-  //      resource = artifactClassLoader.getClassLoader().getResource(name);
-  //    } else {
-  //      resource = classLoaders.get(0).findResource(name);
-  //    }
-  //  }
-  //  return resource;
-  //}
-
-  //public final InputStream getResourceAsStream(final String name) {
-  //  return null;
-  //}
-
-  //public final Enumeration<URL> getResources(final String name) throws IOException {
-  //  final ArtifactClassLoader artifactClassLoader = resourceMapping.get(name);
-  //  if (artifactClassLoader != null) {
-  //    return artifactClassLoader.getClassLoader().getResources(name);
-  //  } else {
-  //    // TODO(pablo.kraan): need to use the app CL at some point
-  //    return getParent().getResources(name);
-  //  }
-  //}
 }
