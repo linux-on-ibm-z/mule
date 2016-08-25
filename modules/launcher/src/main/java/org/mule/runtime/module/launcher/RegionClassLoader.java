@@ -21,11 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import sun.misc.CompoundEnumeration;
+
+//TODO(pablo.kraan): isolation - add unit tests
 public class RegionClassLoader extends MuleArtifactClassLoader {
 
   private final List<ArtifactClassLoader> classLoaders = new ArrayList<>();
   private final Map<String, ArtifactClassLoader> packageMapping = new HashMap<>();
-  private final Map<String, ArtifactClassLoader> resourceMapping = new HashMap<>();
+  private final Map<String, List<ArtifactClassLoader>> resourceMapping = new HashMap<>();
 
   public RegionClassLoader(String name, URL[] urls, ClassLoader parent, ClassLoaderLookupPolicy lookupPolicy) {
     super(name, urls, parent, lookupPolicy);
@@ -36,7 +39,17 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
     classLoaders.add(artifactClassLoader);
 
     exportedPackages.forEach(p -> packageMapping.put(p, artifactClassLoader));
-    exportedResources.forEach(r -> resourceMapping.put(r, artifactClassLoader));
+
+    for (String exportedResource : exportedResources) {
+      List<ArtifactClassLoader> classLoaders = resourceMapping.get(exportedResource);
+
+      if (classLoaders == null) {
+        classLoaders = new ArrayList<>();
+        resourceMapping.put(exportedResource, classLoaders);
+      }
+
+      classLoaders.add(artifactClassLoader);
+    }
   }
 
   @Override
@@ -54,10 +67,16 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
 
   @Override
   public final URL findResource(final String name) {
-    URL resource;
-    final ArtifactClassLoader artifactClassLoader = resourceMapping.get(name);
-    if (artifactClassLoader != null) {
-      resource = artifactClassLoader.getClassLoader().getResource(name);
+    URL resource = null;
+    final List<ArtifactClassLoader> artifactClassLoaders = resourceMapping.get(name);
+    if (artifactClassLoaders != null) {
+      for (ArtifactClassLoader artifactClassLoader : artifactClassLoaders) {
+        resource = artifactClassLoader.getClassLoader().getResource(name);
+        if (resource != null) {
+          break;
+        }
+      }
+
     } else {
       resource = classLoaders.get(0).findResource(name);
     }
@@ -67,9 +86,17 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
   @Override
   public final Enumeration<URL> findResources(final String name) throws IOException {
     final Enumeration<URL> resources;
-    final ArtifactClassLoader artifactClassLoader = resourceMapping.get(name);
-    if (artifactClassLoader != null) {
-      resources = artifactClassLoader.findResources(name);
+    final List<ArtifactClassLoader> artifactClassLoaders = resourceMapping.get(name);
+    if (artifactClassLoaders != null) {
+      List<Enumeration<URL>> enumerations = new ArrayList<>(classLoaders.size());
+      for (ArtifactClassLoader artifactClassLoader : artifactClassLoaders) {
+
+        final Enumeration<URL> partialResources = artifactClassLoader.findResources(name);
+        if (partialResources.hasMoreElements()) {
+          enumerations.add(partialResources);
+        }
+      }
+      resources = new CompoundEnumeration<>(enumerations.toArray(new Enumeration[0]));
     } else {
       resources = classLoaders.get(0).findResources(name);
     }
