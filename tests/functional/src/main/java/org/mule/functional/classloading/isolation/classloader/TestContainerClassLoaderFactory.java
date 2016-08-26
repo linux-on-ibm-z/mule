@@ -73,7 +73,6 @@ public class TestContainerClassLoaderFactory extends ContainerClassLoaderFactory
   @Override
   protected ArtifactClassLoader createArtifactClassLoader(final ClassLoader parentClassLoader, final List<MuleModule> muleModules,
                                                           final ClassLoaderLookupPolicy containerLookupPolicy) {
-    //TODO(pablo.kraan): isolatin - do I need to pass the parentClassLaoder's lookupPolicy?
     final ArtifactClassLoader containerClassLoader =
         new MuleArtifactClassLoader("mule", urls, parentClassLoader,
                                     new MuleClassLoaderLookupPolicy(Collections.emptyMap(), getBootPackages()));

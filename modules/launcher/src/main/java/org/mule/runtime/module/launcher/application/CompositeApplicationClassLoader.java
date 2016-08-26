@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Defines a composite classloader for applications
  */
+//TODO(pablo.kraan): isolation - IIRC, this class was needed because of the logging module. Check if we need a ApplicationRegionClassLoader
 public class CompositeApplicationClassLoader extends CompositeArtifactClassLoader implements ApplicationClassLoader {
 
   static {
