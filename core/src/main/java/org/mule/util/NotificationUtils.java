@@ -13,6 +13,8 @@ import org.mule.api.processor.MessageProcessor;
 import org.mule.api.processor.MessageProcessorContainer;
 import org.mule.api.processor.MessageProcessorPathElement;
 import org.mule.processor.chain.DynamicMessageProcessorContainer;
+import org.mule.processor.chain.InterceptingChainLifecycleWrapper;
+import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -95,8 +97,15 @@ public class NotificationUtils
         {
             if (!(mp instanceof InternalMessageProcessor))
             {
-
-                MessageProcessorPathElement messageProcessorPathElement = parentElement.addChild(mp);
+                MessageProcessorPathElement messageProcessorPathElement;
+                if (!(mp instanceof InterceptingChainLifecycleWrapper) || (mp instanceof SubflowInterceptingChainLifecycleWrapper))
+                {
+                    messageProcessorPathElement = parentElement.addChild(mp);
+                }
+                else
+                {
+                    messageProcessorPathElement = parentElement;
+                }
                 if (mp instanceof MessageProcessorContainer)
                 {
                     ((MessageProcessorContainer) mp).addMessageProcessorPathElements(messageProcessorPathElement);
