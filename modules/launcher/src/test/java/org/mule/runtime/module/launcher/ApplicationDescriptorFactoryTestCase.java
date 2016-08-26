@@ -22,7 +22,7 @@ import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFi
 import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
-import org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilterFactory;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilterFactory;
 import org.mule.runtime.module.launcher.application.DuplicateExportedPackageException;
 import org.mule.runtime.module.launcher.builder.ArtifactPluginFileBuilder;
 import org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor;
@@ -50,7 +50,6 @@ import org.junit.rules.TemporaryFolder;
 public class ApplicationDescriptorFactoryTestCase extends AbstractMuleTestCase {
 
   public static final String APP_NAME = "testApp";
-  public static final String JAR_FILE_NAME = "test.jar";
 
   @Rule
   public TemporaryFolder muleHome = new SystemPropertyTemporaryFolder(MuleProperties.MULE_HOME_DIRECTORY_PROPERTY);
@@ -131,7 +130,7 @@ public class ApplicationDescriptorFactoryTestCase extends AbstractMuleTestCase {
 
   private void doPackageValidationTest(ArtifactPluginRepository applicationPluginRepository) {
     final ArtifactPluginDescriptorFactory pluginDescriptorFactory =
-        new ArtifactPluginDescriptorFactory(new DefaultArtifactClassLoaderFilterFactory());
+        new ArtifactPluginDescriptorFactory(new ArtifactClassLoaderFilterFactory());
     final ApplicationDescriptorFactory applicationDescriptorFactory =
         new ApplicationDescriptorFactory(new ArtifactPluginDescriptorLoader(pluginDescriptorFactory),
                                          applicationPluginRepository);

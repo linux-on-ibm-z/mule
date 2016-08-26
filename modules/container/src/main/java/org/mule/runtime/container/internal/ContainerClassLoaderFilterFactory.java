@@ -95,6 +95,18 @@ public class ContainerClassLoaderFilterFactory {
       return exported;
     }
 
+    @Override
+    public Set<String> getExportedClassPackages() {
+      //TODO(pablo.kraan): isolation - implement this
+      return null;
+    }
+
+    @Override
+    public Set<String> getExportedResources() {
+      //TODO(pablo.kraan): isolation - implement this
+      return null;
+    }
+
     private String getResourceFolder(String resourceName) {
       String resourceFolder = "";
       if (resourceName.length() > 0) {

@@ -20,7 +20,7 @@ import static org.mule.runtime.module.launcher.plugin.ArtifactPluginDescriptorFa
 import static org.mule.runtime.core.util.FileUtils.stringToFile;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilter;
-import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilterFactory;
+import org.mule.runtime.module.artifact.classloader.ClassLoaderFilterFactory;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.runtime.core.util.FileUtils;
@@ -43,7 +43,7 @@ public class ArtifactPluginDescriptorFactoryTestCase extends AbstractMuleTestCas
   @Rule
   public TemporaryFolder pluginsFolder = new TemporaryFolder();
 
-  private final ArtifactClassLoaderFilterFactory classLoaderFilterFactory = mock(ArtifactClassLoaderFilterFactory.class);
+  private final ClassLoaderFilterFactory classLoaderFilterFactory = mock(ClassLoaderFilterFactory.class);
   private ArtifactPluginDescriptorFactory descriptorFactory = new ArtifactPluginDescriptorFactory(classLoaderFilterFactory);
 
   @Before
@@ -175,12 +175,6 @@ public class ArtifactPluginDescriptorFactoryTestCase extends AbstractMuleTestCas
 
     public PluginPropertiesBuilder(File pluginFolder) {
       this.pluginFolder = pluginFolder;
-    }
-
-    public PluginPropertiesBuilder overriding(String overrides) {
-      this.overrides = overrides;
-
-      return this;
     }
 
     public PluginPropertiesBuilder exportingClassesFrom(String packages) {

@@ -5,12 +5,9 @@
  * LICENSE.txt file.
  */
 
-package org.mule.runtime.module.launcher;
+package org.mule.runtime.module.artifact.classloader;
 
 import org.mule.runtime.core.util.ClassUtils;
-import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
-import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
-import org.mule.runtime.module.artifact.classloader.MuleArtifactClassLoader;
 
 import java.io.IOException;
 import java.net.URL;
@@ -95,6 +92,11 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
         if (partialResources.hasMoreElements()) {
           enumerations.add(partialResources);
         }
+      }
+      // Adds the resources from the region's owner
+      final Enumeration<URL> ownerResources = classLoaders.get(0).findResources(name);
+      if (ownerResources.hasMoreElements()) {
+        enumerations.add(ownerResources);
       }
       resources = new CompoundEnumeration<>(enumerations.toArray(new Enumeration[0]));
     } else {

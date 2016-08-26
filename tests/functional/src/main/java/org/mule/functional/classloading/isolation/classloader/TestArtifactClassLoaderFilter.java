@@ -9,6 +9,7 @@ package org.mule.functional.classloading.isolation.classloader;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.function.Function.identity;
+import static org.apache.commons.lang.ClassUtils.getPackageName;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.util.Preconditions.checkNotNull;
@@ -16,8 +17,10 @@ import static org.mule.runtime.core.util.StringMessageUtils.DEFAULT_MESSAGE_WIDT
 import org.mule.runtime.core.util.StringMessageUtils;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilter;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -36,6 +39,7 @@ public final class TestArtifactClassLoaderFilter implements ClassLoaderFilter {
 
   private final ClassLoaderFilter classLoaderFilter;
   private final Map<String, Object> exportedClasses;
+  private final Set<String> exportedPackages;
 
   /**
    * Creates an extended {@link ClassLoaderFilter} to exporte classes that are not exported as packages in the original filter.
@@ -49,6 +53,11 @@ public final class TestArtifactClassLoaderFilter implements ClassLoaderFilter {
 
     this.classLoaderFilter = classLoaderFilter;
     this.exportedClasses = exportedClasses.stream().collect(Collectors.toMap(Class::getName, identity()));
+
+    exportedPackages = new HashSet<>(classLoaderFilter.getExportedClassPackages());
+    for (Class clazz : exportedClasses) {
+      exportedPackages.add(getPackageName(clazz.getName()));
+    }
   }
 
   /**
@@ -81,5 +90,15 @@ public final class TestArtifactClassLoaderFilter implements ClassLoaderFilter {
   @Override
   public boolean exportsResource(final String name) {
     return classLoaderFilter.exportsResource(name);
+  }
+
+  @Override
+  public Set<String> getExportedClassPackages() {
+    return exportedPackages;
+  }
+
+  @Override
+  public Set<String> getExportedResources() {
+    return classLoaderFilter.getExportedResources();
   }
 }

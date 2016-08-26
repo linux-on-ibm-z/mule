@@ -44,28 +44,39 @@ public class FineGrainedControlClassLoader extends GoodCitizenClassLoader implem
 
     final ClassLoaderLookupStrategy lookupStrategy = lookupPolicy.getLookupStrategy(name);
 
+    // TODO(pablo.kraan): isolation - add these logs
+    // System.out.println("Loading class: " + name + " from: " + this + " lookup: " + lookupStrategy);
+
     // Gather information about the exceptions in each of the searched classloaders to provide
     // troubleshooting information in case of throwing a ClassNotFoundException.
     ClassNotFoundException firstException = null;
 
+    String msg = null;
     try {
       if (lookupStrategy == PARENT_ONLY) {
         result = findParentClass(name);
+        msg = "THIS: " + this + " PARENT: " + getParent();
       } else if (lookupStrategy == PARENT_FIRST) {
         try {
           result = findParentClass(name);
+          msg = "THIS: " + this + " PARENT: " + getParent();
         } catch (ClassNotFoundException e) {
           firstException = e;
           result = findClass(name);
+          msg = "THIS: " + this;
         }
       } else {
         try {
           result = findClass(name);
+          msg = "THIS: " + this;
         } catch (ClassNotFoundException e) {
           firstException = e;
           result = findParentClass(name);
+          msg = "THIS: " + this + " PARENT: " + getParent();
         }
       }
+      // TODO(pablo.kraan): isolation - add these logs
+      // System.out.println("Class: " + name + " found in " + msg);
     } catch (ClassNotFoundException e) {
       throw new CompositeClassNotFoundException(name, lookupStrategy,
                                                 firstException != null ? asList(firstException, e) : asList(e));

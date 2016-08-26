@@ -85,13 +85,12 @@ public class ArtifactClassLoaderFilter implements ClassLoaderFilter {
     return exportedResources.contains(sanitizeResourceName);
   }
 
-  /**
-   * @return exported class packages configured on this filter. Non null.
-   */
+  @Override
   public Set<String> getExportedClassPackages() {
     return exportedClassPackages;
   }
 
+  @Override
   public Set<String> getExportedResources() {
     return exportedResources;
   }

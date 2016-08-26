@@ -17,9 +17,9 @@ import java.lang.reflect.AnnotatedElement;
 
 import org.junit.Test;
 
-public class DefaultArtifactClassLoaderFilterFactoryTestCase extends AbstractMuleTestCase {
+public class ArtifactClassLoaderFilterFactoryTestCase extends AbstractMuleTestCase {
 
-  private final DefaultArtifactClassLoaderFilterFactory factory = new DefaultArtifactClassLoaderFilterFactory();
+  private final ArtifactClassLoaderFilterFactory factory = new ArtifactClassLoaderFilterFactory();
 
   @Test
   public void createsNullFilter() throws Exception {

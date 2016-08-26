@@ -29,7 +29,7 @@ public class MuleClassLoaderLookupPolicy implements ClassLoaderLookupPolicy {
 
   private final Map<String, ClassLoaderLookupStrategy> configuredlookupStrategies;
   private final Set<String> rootSystemPackages;
-  private final HashMap<String, ClassLoaderLookupStrategy> lookupStrategies;
+  private final Map<String, ClassLoaderLookupStrategy> lookupStrategies;
 
   /**
    * Creates a new lookup policy based on the provided configuration.
