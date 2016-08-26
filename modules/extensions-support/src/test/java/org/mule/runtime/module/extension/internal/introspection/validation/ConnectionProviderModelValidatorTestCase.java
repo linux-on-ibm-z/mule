@@ -20,7 +20,7 @@ import org.mule.runtime.extension.api.annotation.Configuration;
 import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
-import org.mule.runtime.extension.api.annotation.connector.Providers;
+import org.mule.runtime.extension.api.annotation.connector.ConnectionProviders;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.connectivity.TransactionalConnection;
 import org.mule.runtime.extension.api.exception.IllegalModelDefinitionException;
@@ -87,7 +87,7 @@ public class ConnectionProviderModelValidatorTestCase extends AbstractMuleTestCa
   @Extension(name = "validatorTest")
   @Configurations({TestConfig.class, TestConfig2.class})
   @Operations(ValidTestOperations.class)
-  @Providers({TestConnectionProvider.class, TestConnectionProvider2.class})
+  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class})
   public static class ValidTestConnector {
 
   }
@@ -118,19 +118,19 @@ public class ConnectionProviderModelValidatorTestCase extends AbstractMuleTestCa
   @Extension(name = "validatorTest")
   @Configurations({TestConfig.class, TestConfig2.class})
   @Operations(ValidTestOperations.class)
-  @Providers({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidConfigConnectionProvider.class})
+  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidConfigConnectionProvider.class})
   public static class InvalidConfigConnectionProviderTestConnector {
 
   }
 
   @Extension(name = "invalidTransactionalProvider")
-  @Providers({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidTransactionalProvider.class})
+  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidTransactionalProvider.class})
   public static class InvalidTransactionalProviderConnector {
 
   }
 
   @Extension(name = "validTransactionalProvider")
-  @Providers({TestConnectionProvider.class, TestConnectionProvider2.class, ValidTransactionalProvider.class})
+  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class, ValidTransactionalProvider.class})
   public static class ValidTransactionalProviderConnector {
 
   }
@@ -138,7 +138,7 @@ public class ConnectionProviderModelValidatorTestCase extends AbstractMuleTestCa
   @Extension(name = "validatorTest")
   @Configurations({TestConfig.class, TestConfig2.class})
   @Operations(ValidTestOperations.class)
-  @Providers({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidTypeConnectionProvider.class})
+  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidTypeConnectionProvider.class})
   public static class InvalidConnectionTypeProviderTestConnector {
 
   }

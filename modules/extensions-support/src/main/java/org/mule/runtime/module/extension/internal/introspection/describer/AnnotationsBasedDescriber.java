@@ -165,9 +165,12 @@ public final class AnnotationsBasedDescriber implements Describer {
             .withModelProperty(new ImplementingTypeModelProperty(this.extensionType));
 
     declareConfigurations(declaration, extensionElement);
-    declareOperations(declaration, extensionElement);
-    declareConnectionProviders(declaration, extensionElement);
-    declareMessageSources(declaration, extensionElement);
+
+    if (!this.extensionType.equals(extensionElement.getDeclaredClass())) {
+      declareOperations(declaration, extensionElement);
+      declareConnectionProviders(declaration, extensionElement);
+      declareMessageSources(declaration, extensionElement);
+    }
 
     return declaration;
   }
@@ -208,11 +211,9 @@ public final class AnnotationsBasedDescriber implements Describer {
 
     declareFieldBasedParameters(configurationDeclarer, configurationType.getParameters());
 
-    if (!extensionType.equals(configurationType)) {
-      declareOperations(configurationDeclarer, configurationType);
-      declareMessageSources(configurationDeclarer, configurationType);
-      declareConnectionProviders(configurationDeclarer, configurationType);
-    }
+    declareOperations(configurationDeclarer, configurationType);
+    declareMessageSources(configurationDeclarer, configurationType);
+    declareConnectionProviders(configurationDeclarer, configurationType);
   }
 
   private void declareMessageSources(HasSourceDeclarer declarer, WithMessageSources typeComponent) {
