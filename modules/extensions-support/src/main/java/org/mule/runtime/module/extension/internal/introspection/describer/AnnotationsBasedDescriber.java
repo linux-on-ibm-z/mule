@@ -165,10 +165,10 @@ public final class AnnotationsBasedDescriber implements Describer {
             .withModelProperty(new ImplementingTypeModelProperty(this.extensionType));
 
     declareConfigurations(declaration, extensionElement);
+    declareConnectionProviders(declaration, extensionElement);
 
     if (!this.extensionType.equals(extensionElement.getDeclaredClass())) {
       declareOperations(declaration, extensionElement);
-      declareConnectionProviders(declaration, extensionElement);
       declareMessageSources(declaration, extensionElement);
     }
 

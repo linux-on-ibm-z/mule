@@ -91,7 +91,8 @@ public class DisplayModelEnricherTestCase extends AbstractMuleTestCase {
   @Test
   public void parseSummaryAnnotationOnOperationParameter() {
     ExtensionDeclaration extensionDeclaration = declarer.getDeclaration();
-    OperationDeclaration operation = getOperation(extensionDeclaration.getConfigurations().get(0), HeisenbergOperations.OPERATION_WITH_SUMMARY);
+    OperationDeclaration operation =
+        getOperation(extensionDeclaration.getConfigurations().get(0), HeisenbergOperations.OPERATION_WITH_SUMMARY);
 
     assertThat(operation, is(notNullValue()));
     List<ParameterDeclaration> parameters = operation.getParameters();

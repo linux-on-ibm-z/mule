@@ -116,9 +116,8 @@ public class ConnectionProviderModelValidatorTestCase extends AbstractMuleTestCa
   }
 
   @Extension(name = "validatorTest")
-  @Configurations({TestConfig.class, TestConfig2.class})
-  @Operations(ValidTestOperations.class)
-  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidConfigConnectionProvider.class})
+  @Configurations({TestConfig.class, TestConfig2.class, InvalidConfig.class})
+  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class})
   public static class InvalidConfigConnectionProviderTestConnector {
 
   }
@@ -144,12 +143,21 @@ public class ConnectionProviderModelValidatorTestCase extends AbstractMuleTestCa
   }
 
   @Configuration(name = "config")
+  @Operations(ValidTestOperations.class)
   public static class TestConfig implements Config {
 
   }
 
   @Configuration(name = "config2")
+  @Operations(ValidTestOperations.class)
   public static class TestConfig2 implements Config {
+
+  }
+
+  @Configuration(name = "invalidConfig")
+  @Operations(ValidTestOperations.class)
+  @ConnectionProviders({TestConnectionProvider.class, TestConnectionProvider2.class, InvalidConfigConnectionProvider.class})
+  public static class InvalidConfig implements Config {
 
   }
 

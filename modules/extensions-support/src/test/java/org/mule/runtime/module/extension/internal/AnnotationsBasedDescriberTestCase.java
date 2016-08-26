@@ -56,7 +56,6 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.UseConfig;
 import org.mule.runtime.extension.api.exception.IllegalModelDefinitionException;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.ConfigurationDeclaration;
-import org.mule.runtime.extension.api.introspection.declaration.fluent.ConnectedDeclaration;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.ConnectionProviderDeclaration;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.ExtensionDeclaration;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.ExtensionDeclarer;
@@ -563,11 +562,8 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
   }
 
   private void assertTestModuleConnectionProviders(ExtensionDeclaration extensionDeclaration) throws Exception {
-    assertThat(extensionDeclaration.getConnectionProviders(), hasSize(0));
-
-    ConnectedDeclaration connectedDeclaration = extensionDeclaration.getConfigurations().get(0);
-    assertThat(connectedDeclaration.getConnectionProviders().size(), is(1));
-    ConnectionProviderDeclaration connectionProvider = (ConnectionProviderDeclaration) connectedDeclaration.getConnectionProviders().get(0);
+    assertThat(extensionDeclaration.getConnectionProviders(), hasSize(1));
+    ConnectionProviderDeclaration connectionProvider = extensionDeclaration.getConnectionProviders().get(0);
     assertThat(connectionProvider.getName(), is(DEFAULT_CONNECTION_PROVIDER_NAME));
 
     List<ParameterDeclaration> parameters = connectionProvider.getParameters();
@@ -581,7 +577,7 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
   }
 
   private void assertTestModuleMessageSource(ExtensionDeclaration extensionDeclaration) throws Exception {
-    assertThat(extensionDeclaration.getConnectionProviders(), hasSize(0));
+    assertThat(extensionDeclaration.getMessageSources(), hasSize(0));
     WithSourcesDeclaration withSourcesDeclaration = extensionDeclaration.getConfigurations().get(0);
 
     assertThat(withSourcesDeclaration.getMessageSources().size(), is(1));

@@ -46,7 +46,7 @@ public class ConfigurationModelEnricherTestCase {
 
   @Test
   public void verifyConfigurationModelPropertyOnOperation() {
-    OperationDeclaration operationDeclaration = getDeclaration(declaration.getOperations(), GET_ENEMY);
+    OperationDeclaration operationDeclaration = getDeclaration(declaration.getConfigurations().get(0).getOperations(), GET_ENEMY);
     final ConfigTypeModelProperty configTypeModelProperty = checkIsPresent(operationDeclaration, ConfigTypeModelProperty.class);
 
     assertType(configTypeModelProperty);
@@ -54,7 +54,7 @@ public class ConfigurationModelEnricherTestCase {
 
   @Test
   public void verifyConfigurationModelPropertyOnSource() {
-    SourceDeclaration sourceDeclaration = getDeclaration(declaration.getMessageSources(), LISTEN_PAYMENTS);
+    SourceDeclaration sourceDeclaration = getDeclaration(declaration.getConfigurations().get(0).getMessageSources(), LISTEN_PAYMENTS);
     final ConfigTypeModelProperty configTypeModelProperty = checkIsPresent(sourceDeclaration, ConfigTypeModelProperty.class);
 
     assertType(configTypeModelProperty);

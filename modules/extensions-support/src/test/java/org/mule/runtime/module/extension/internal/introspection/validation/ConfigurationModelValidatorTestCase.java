@@ -43,8 +43,7 @@ public class ConfigurationModelValidatorTestCase extends AbstractMuleTestCase {
   }
 
   @Extension(name = "invalidExtension")
-  @Configurations({TestConfig.class})
-  @Operations(InvalidTestOperations.class)
+  @Configurations({InvalidTestConfig.class})
   public static class InvalidExtension {
 
   }
@@ -58,6 +57,11 @@ public class ConfigurationModelValidatorTestCase extends AbstractMuleTestCase {
 
   @Configuration(name = "config")
   public static class TestConfig implements Config {
+
+  }
+
+  @Operations(InvalidTestOperations.class)
+  public static class InvalidTestConfig implements Config {
 
   }
 
