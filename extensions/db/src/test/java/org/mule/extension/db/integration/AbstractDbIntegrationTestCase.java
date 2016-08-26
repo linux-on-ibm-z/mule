@@ -23,6 +23,8 @@ import org.mule.functional.junit4.FlowRunner;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.functional.junit4.runners.ArtifactClassLoaderRunnerConfig;
 import org.mule.functional.junit4.runners.RunnerDelegateTo;
+import org.mule.metadata.api.builder.BaseTypeBuilder;
+import org.mule.metadata.api.model.MetadataFormat;
 import org.mule.runtime.api.message.MuleMessage;
 import org.mule.runtime.extension.api.runtime.ConfigurationProvider;
 
@@ -43,6 +45,7 @@ public abstract class AbstractDbIntegrationTestCase extends MuleArtifactFunction
 
   private final String dataSourceConfigResource;
   protected final AbstractTestDatabase testDatabase;
+  protected final BaseTypeBuilder<?> typeBuilder = BaseTypeBuilder.create(MetadataFormat.JAVA);
 
   public AbstractDbIntegrationTestCase(String dataSourceConfigResource, AbstractTestDatabase testDatabase) {
     this.dataSourceConfigResource = dataSourceConfigResource;

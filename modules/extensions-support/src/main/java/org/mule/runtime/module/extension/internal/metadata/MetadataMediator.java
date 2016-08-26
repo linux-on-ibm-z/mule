@@ -139,7 +139,8 @@ public class MetadataMediator {
    */
   public MetadataResult<ComponentMetadataDescriptor> getMetadata() {
     ComponentMetadataDescriptorBuilder componentDescriptorBuilder = componentDescriptor(componentModel.getName())
-        .withParametersDescriptor(getParametersMetadataDescriptors()).withOutputDescriptor(getOutputMetadataDescriptor());
+        .withParametersDescriptor(getParametersMetadataDescriptors())
+        .withOutputDescriptor(getOutputMetadataDescriptor());
 
     Optional<MetadataResult<ParameterMetadataDescriptor>> contentDescriptor = getContentMetadataDescriptor();
     if (contentDescriptor.isPresent()) {
@@ -174,6 +175,7 @@ public class MetadataMediator {
         .withParametersDescriptor(getParametersMetadataDescriptors()).withOutputDescriptor(outputResult);
 
     if (!contentDescriptor.isPresent()) {
+
       return outputResult.isSuccess() ? success(componentDescriptorBuilder.build())
           : failure(componentDescriptorBuilder.build(), outputResult);
     }

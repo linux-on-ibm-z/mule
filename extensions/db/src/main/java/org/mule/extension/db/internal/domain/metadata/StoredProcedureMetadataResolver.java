@@ -7,26 +7,32 @@
 package org.mule.extension.db.internal.domain.metadata;
 
 import static org.mule.metadata.api.model.MetadataFormat.JAVA;
+import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
-import org.mule.metadata.api.builder.DictionaryTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.metadata.MetadataContext;
 import org.mule.runtime.api.metadata.MetadataResolvingException;
 import org.mule.runtime.api.metadata.resolving.MetadataOutputResolver;
+import org.mule.runtime.extension.api.introspection.declaration.type.ExtensionsTypeLoaderFactory;
 
-public class SelectOutputResolver implements MetadataOutputResolver {
+import java.util.Map;
+
+public class StoredProcedureMetadataResolver extends AbstractMetadataResolver implements MetadataOutputResolver<String> {
 
   private BaseTypeBuilder typeBuilder = BaseTypeBuilder.create(JAVA);
+  private Map<Integer, MetadataType> dbToMetaDataType;
+  private ClassTypeLoader typeLoader = ExtensionsTypeLoaderFactory.getDefault().createTypeLoader();
+  public static final String DUPLICATE_COLUMN_LABEL_ERROR =
+      "Query metadata contains multiple columns with the same label. Define column aliases to resolve this problem";
 
   @Override
-  public MetadataType getOutputMetadata(MetadataContext context, Object key)
+  public MetadataType getOutputMetadata(MetadataContext context, String query)
       throws MetadataResolvingException, ConnectionException {
 
-    DictionaryTypeBuilder dictionaryTypeBuilder = typeBuilder.dictionaryType();
-    dictionaryTypeBuilder.ofKey().stringType();
-    dictionaryTypeBuilder.ofValue().anyType();
-
-    return typeBuilder.arrayType().of(dictionaryTypeBuilder.build()).build();
+    return typeBuilder.dictionaryType()
+        .ofKey(typeBuilder.stringType())
+        .ofValue(typeBuilder.anyType())
+        .build();
   }
 }
