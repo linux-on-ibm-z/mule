@@ -11,7 +11,6 @@ import static org.mule.runtime.core.context.notification.ExceptionStrategyNotifi
 import static org.mule.runtime.core.message.ErrorBuilder.builder;
 import static org.mule.runtime.core.message.ErrorTypeBuilder.ANY;
 import org.mule.runtime.api.message.ErrorType;
-import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.VoidMuleEvent;
 import org.mule.runtime.core.api.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
@@ -65,15 +64,14 @@ public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
     @Override
     protected MuleEvent processRequest(MuleEvent request) throws MuleException {
       if (!handleException && request.getReplyToHandler() instanceof NonBlockingReplyToHandler) {
-        request = new DefaultMuleEvent(request, flowConstruct, null, null, true);
+        request = MuleEvent.builder(request).flow(flowConstruct).replyToHandler(null).replyToDestination(null).synchronous(true)
+            .build();
       }
       muleContext.getNotificationManager()
           .fireNotification(new ExceptionStrategyNotification(request, flowConstruct, PROCESS_START));
       fireNotification(exception);
       logException(exception, request);
       processStatistics();
-      request
-          .setMessage(MuleMessage.builder(request.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build());
       request.setError(ErrorBuilder.builder(exception).build());
       request.setMessage(MuleMessage.builder(request.getMessage()).build());
 
