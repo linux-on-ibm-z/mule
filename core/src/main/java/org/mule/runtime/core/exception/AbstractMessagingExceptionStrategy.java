@@ -24,7 +24,6 @@ import org.mule.runtime.core.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.lifecycle.Stoppable;
 import org.mule.runtime.core.context.notification.ExceptionStrategyNotification;
 import org.mule.runtime.core.management.stats.FlowConstructStatistics;
-import org.mule.runtime.core.message.ErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 
 /**
@@ -57,7 +56,7 @@ public abstract class AbstractMessagingExceptionStrategy extends AbstractExcepti
       //Throwable t = ExceptionHelper.getRootException(ex);
 
       logException(ex, event);
-      doHandleException(ex, event);
+      event = doHandleException(ex, event);
 
       ExceptionPayload exceptionPayload = new DefaultExceptionPayload(ex);
       Error error = builder(ex).build();
@@ -78,7 +77,7 @@ public abstract class AbstractMessagingExceptionStrategy extends AbstractExcepti
     }
   }
 
-  protected void doHandleException(Exception ex, MuleEvent event) {
+  protected MuleEvent doHandleException(Exception ex, MuleEvent event) {
     FlowConstructStatistics statistics = flowConstruct.getStatistics();
     if (statistics != null && statistics.isEnabled()) {
       statistics.incExecutionError();
@@ -87,15 +86,17 @@ public abstract class AbstractMessagingExceptionStrategy extends AbstractExcepti
     // Left this here for backwards-compatibility, remove in the next major version.
     defaultHandler(ex);
 
+    MuleEvent result;
+
     if (isRollback(ex)) {
       logger.debug("Rolling back transaction");
       rollback(ex);
 
       logger.debug("Routing exception message");
-      routeException(event, flowConstruct, ex);
+      result = routeException(event, flowConstruct, ex);
     } else {
       logger.debug("Routing exception message");
-      routeException(event, flowConstruct, ex);
+      result = routeException(event, flowConstruct, ex);
     }
 
     closeStream(event.getMessage());
@@ -103,6 +104,8 @@ public abstract class AbstractMessagingExceptionStrategy extends AbstractExcepti
     if (stopMessageProcessing) {
       stopFlow();
     }
+
+    return result;
   }
 
   protected void stopFlow() {
