@@ -13,6 +13,7 @@ import static org.mule.runtime.core.context.notification.ExceptionStrategyNotifi
 import static org.mule.runtime.core.message.ErrorBuilder.builder;
 
 import org.mule.runtime.api.message.Error;
+import org.mule.runtime.core.VoidMuleEvent;
 import org.mule.runtime.core.api.ExceptionPayload;
 import org.mule.runtime.core.api.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
@@ -56,7 +57,10 @@ public abstract class AbstractMessagingExceptionStrategy extends AbstractExcepti
       //Throwable t = ExceptionHelper.getRootException(ex);
 
       logException(ex, event);
-      event = doHandleException(ex, event);
+      MuleEvent handledEvent = doHandleException(ex, event);
+      if (!(handledEvent instanceof VoidMuleEvent)) {
+        event = handledEvent;
+      }
 
       ExceptionPayload exceptionPayload = new DefaultExceptionPayload(ex);
       Error error = builder(ex).build();
