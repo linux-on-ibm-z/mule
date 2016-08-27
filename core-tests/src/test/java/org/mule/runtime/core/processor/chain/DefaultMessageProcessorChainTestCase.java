@@ -47,6 +47,7 @@ import org.mule.runtime.core.api.processor.MessageProcessorBuilder;
 import org.mule.runtime.core.api.processor.MessageProcessorChain;
 import org.mule.runtime.core.construct.Flow;
 import org.mule.runtime.core.construct.flow.DefaultFlowProcessingStrategy;
+import org.mule.runtime.core.context.notification.DefaultFlowCallStack;
 import org.mule.runtime.core.processor.AbstractInterceptingMessageProcessor;
 import org.mule.runtime.core.processor.NonBlockingMessageProcessor;
 import org.mule.runtime.core.processor.ResponseMessageProcessorAdapter;
@@ -193,7 +194,7 @@ public class DefaultMessageProcessorChainTestCase extends AbstractMuleContextTes
     assertNotSame(mp2.event, mp2.resultEvent);
 
     // void mp
-    assertEquals(mp2.resultEvent, voidmp.event);
+    assertEquals(mp2.resultEvent.getMessage(), voidmp.event.getMessage());
 
     // mp3
     assertNotSame(mp3.event, mp2.resultEvent);
@@ -1089,6 +1090,7 @@ public class DefaultMessageProcessorChainTestCase extends AbstractMuleContextTes
     MuleEvent event = mock(MuleEvent.class);
     MuleMessage message = MuleMessage.builder().payload(data).build();
     when(event.getId()).thenReturn(RandomStringUtils.randomNumeric(3));
+    when(event.getFlowCallStack()).thenReturn(new DefaultFlowCallStack());
     when(event.getMessage()).thenReturn(message);
     when(event.getExchangePattern()).thenReturn(exchangePattern);
     when(mockFlow.getProcessingStrategy())
