@@ -35,7 +35,6 @@ import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.config.i18n.MessageFactory;
-import org.mule.runtime.core.message.ErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.runtime.core.message.OutputHandler;
 import org.mule.runtime.core.processor.AbstractInterceptingMessageProcessor;
@@ -237,7 +236,8 @@ public class CxfInboundMessageProcessor extends AbstractInterceptingMessageProce
         event = new DefaultMuleEvent(event, new NonBlockingReplyToHandler() {
 
           @Override
-          public void processReplyTo(MuleEvent responseEvent, MuleMessage returnMessage, Object replyTo) throws MuleException {
+          public MuleEvent processReplyTo(MuleEvent responseEvent, MuleMessage returnMessage, Object replyTo)
+              throws MuleException {
             try {
               // CXF execution chain was suspended, so we need to resume it.
               // The MuleInvoker component will be recalled, by using the CxfConstants.NON_BLOCKING_RESPONSE flag we force using
@@ -259,6 +259,7 @@ public class CxfInboundMessageProcessor extends AbstractInterceptingMessageProce
               responseEvent.setError(builder(e).build());
               processExceptionReplyTo(new MessagingException(responseEvent, e, CxfInboundMessageProcessor.this), replyTo);
             }
+            return responseEvent;
           }
 
           @Override
