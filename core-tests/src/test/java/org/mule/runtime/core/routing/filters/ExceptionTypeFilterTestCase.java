@@ -59,7 +59,8 @@ public class ExceptionTypeFilterTestCase extends AbstractMuleTestCase {
     filter = new ExceptionTypeFilter(IOException.class);
     assertThat(filter.accept(event), is(false));
     exception = new IOException("test");
-    when(event.getError()).thenReturn(createMockError(exception));
+    mockError = createMockError(exception);
+    when(event.getError()).thenReturn(mockError);
     assertThat(filter.accept(event), is(true));
   }
 
