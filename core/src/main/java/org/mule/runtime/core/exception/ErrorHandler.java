@@ -53,8 +53,6 @@ public class ErrorHandler extends AbstractMuleObjectOwner<MessagingExceptionHand
     event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build());
     for (MessagingExceptionHandlerAcceptor exceptionListener : exceptionListeners) {
       if (exceptionListener.accept(event)) {
-        event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(null).build());
-        event.setError(null);
         return exceptionListener.handleException(exception, event);
       }
     }
