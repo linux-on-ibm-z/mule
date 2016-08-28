@@ -7,7 +7,7 @@
 package org.mule.extension.http.api.request.validator;
 
 import org.mule.runtime.api.message.MuleMessage;
-import org.mule.runtime.core.api.MessagingException;
+import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 

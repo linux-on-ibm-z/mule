@@ -10,10 +10,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 import static org.mule.runtime.core.DefaultMessageContext.create;
 import static org.mule.runtime.core.MessageExchangePattern.ONE_WAY;
 import static org.mule.runtime.core.MessageExchangePattern.REQUEST_RESPONSE;
-import static org.mule.runtime.core.message.ErrorBuilder.builder;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.DefaultMuleEvent;
@@ -25,15 +31,9 @@ import org.mule.runtime.core.api.MuleSession;
 import org.mule.runtime.core.api.processor.MessageProcessor;
 import org.mule.runtime.core.api.routing.CouldNotRouteOutboundMessageException;
 import org.mule.runtime.core.construct.Flow;
-import org.mule.runtime.core.message.ErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.runtime.core.transformer.simple.StringAppendTransformer;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
 
 public class FirstSuccessfulTestCase extends AbstractMuleContextTestCase {
 
@@ -156,7 +156,7 @@ public class FirstSuccessfulTestCase extends AbstractMuleContextTestCase {
           throw new DefaultMuleException("Saw " + rejectIfMatches);
         } else if (payload.toLowerCase().indexOf(rejectIfMatches) >= 0) {
           Exception exception = new Exception();
-          error = builder(exception).build();
+          error = createMockError(exception);
           msg = MuleMessage.builder().nullPayload().exceptionPayload(new DefaultExceptionPayload(exception)).build();
         } else {
           msg = MuleMessage.builder().payload("No " + rejectIfMatches).build();
@@ -167,6 +167,12 @@ public class FirstSuccessfulTestCase extends AbstractMuleContextTestCase {
       } catch (Exception e) {
         throw new DefaultMuleException(e);
       }
+    }
+
+    private Error createMockError(Exception exception) {
+      Error errorMock = Mockito.mock(Error.class);
+      when(errorMock.getException()).thenReturn(exception);
+      return errorMock;
     }
   }
 }

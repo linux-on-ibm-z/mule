@@ -9,6 +9,7 @@ package org.mule.test.integration.exceptions;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.module.http.api.HttpConstants.Methods.POST;
 import static org.mule.runtime.module.http.api.client.HttpRequestOptionsBuilder.newOptions;
+import org.mule.runtime.core.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.core.api.MuleMessage;
@@ -113,7 +114,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     assertThat(getPayloadAsString(result), Is.is(MESSAGE + " apt1 apt2 groovified"));
   }
 
-  public static class LoadNewsProcessor implements MessageProcessor {
+  public static class LoadNewsProcessor extends AbstractAnnotatedObject implements MessageProcessor {
 
     @Override
     public MuleEvent process(MuleEvent event) throws MuleException {
@@ -126,7 +127,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  public static class NewsErrorProcessor implements MessageProcessor {
+  public static class NewsErrorProcessor extends AbstractAnnotatedObject implements MessageProcessor {
 
     @Override
     public MuleEvent process(MuleEvent event) throws MuleException {

@@ -18,17 +18,21 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.runtime.core.DefaultMessageContext.create;
 import static org.mule.runtime.core.MessageExchangePattern.ONE_WAY;
 import static org.mule.runtime.core.MessageExchangePattern.REQUEST_RESPONSE;
 
+import org.mule.runtime.api.message.Error;
+import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.MessageExchangePattern;
 import org.mule.runtime.core.NonBlockingVoidMuleEvent;
 import org.mule.runtime.core.VoidMuleEvent;
-import org.mule.runtime.core.api.MessagingException;
+import org.mule.runtime.core.exception.ErrorTypeLocator;
+import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleException;
@@ -111,11 +115,15 @@ public class DefaultMessageProcessorChainTestCase extends AbstractMuleContextTes
   @Before
   public void before() {
     muleContext = mock(MuleContext.class);
+    ErrorTypeLocator errorTypeLocator = mock(ErrorTypeLocator.class);
+    ErrorType errorType = mock(ErrorType.class);
     MuleConfiguration muleConfiguration = mock(MuleConfiguration.class);
     when(muleConfiguration.isContainerMode()).thenReturn(false);
     when(muleConfiguration.getId()).thenReturn(RandomStringUtils.randomNumeric(3));
     when(muleConfiguration.getShutdownTimeout()).thenReturn(1000);
     when(muleContext.getConfiguration()).thenReturn(muleConfiguration);
+    when(muleContext.getErrorTypeLocator()).thenReturn(errorTypeLocator);
+    when(errorTypeLocator.findErrorType(any())).thenReturn(errorType);
   }
 
   @After

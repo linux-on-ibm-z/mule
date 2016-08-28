@@ -18,14 +18,9 @@ import org.mule.runtime.api.message.ErrorType;
  */
 public final class ErrorTypeBuilder {
 
-  private static final String MULE_NAMESPACE = "mule";
-  private static final String ANY_STRING_REPRESENTATION = "ANY";
-  private static final String GENERAL_STRING_REPRESENTATION = "GENERAL";
-
-  public static final ErrorType ANY =
-      ErrorTypeBuilder.builder().namespace(MULE_NAMESPACE).stringRepresentation(ANY_STRING_REPRESENTATION).build();
-  public static final ErrorType GENERAL = ErrorTypeBuilder.builder().namespace(MULE_NAMESPACE)
-      .stringRepresentation(GENERAL_STRING_REPRESENTATION).parentErrorType(ANY).build();
+  public static final String MULE_NAMESPACE = "mule";
+  public static final String ANY_STRING_REPRESENTATION = "ANY";
+  public static final String GENERAL_STRING_REPRESENTATION = "GENERAL";
 
   private String stringRepresentation;
   private String namespace;

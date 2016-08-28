@@ -8,14 +8,13 @@ package org.mule.runtime.core.routing;
 
 import static java.lang.String.format;
 import static org.mule.runtime.core.DefaultMuleEvent.getFlowVariableOrNull;
-import static org.mule.runtime.core.message.ErrorBuilder.builder;
 import static org.mule.runtime.core.routing.UntilSuccessful.DEFAULT_PROCESS_ATTEMPT_COUNT_PROPERTY_VALUE;
 import static org.mule.runtime.core.routing.UntilSuccessful.PROCESS_ATTEMPT_COUNT_PROPERTY_NAME;
 import static org.mule.runtime.core.util.store.QueuePersistenceObjectStore.DEFAULT_QUEUE_STORE;
 
 import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.VoidMuleEvent;
-import org.mule.runtime.core.api.MessagingException;
+import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleException;
@@ -31,7 +30,6 @@ import org.mule.runtime.core.api.store.ObjectStoreException;
 import org.mule.runtime.core.config.ExceptionHelper;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.config.i18n.MessageFactory;
-import org.mule.runtime.core.message.ErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.runtime.core.retry.RetryPolicyExhaustedException;
 import org.mule.runtime.core.util.concurrent.ThreadNameHelper;
@@ -207,7 +205,6 @@ public class AsynchronousUntilSuccessfulProcessingStrategy extends AbstractUntil
     try {
       mutableEvent.setMessage(MuleMessage.builder(mutableEvent.getMessage())
           .exceptionPayload(new DefaultExceptionPayload(buildRetryPolicyExhaustedException(lastException))).build());
-      mutableEvent.setError(builder(buildRetryPolicyExhaustedException(lastException)).build());
 
       getUntilSuccessfulConfiguration().getDlqMP().process(mutableEvent);
     } catch (MessagingException e) {

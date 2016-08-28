@@ -6,12 +6,18 @@
  */
 package org.mule.runtime.core.execution;
 
-import org.mule.runtime.core.api.MessagingException;
+import org.mule.runtime.api.message.ErrorType;
+import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.core.DefaultMuleContext;
+import org.mule.runtime.core.config.ComponentIdentifier;
+import org.mule.runtime.core.exception.ErrorTypeLocator;
+import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.execution.ExceptionContextProvider;
 import org.mule.runtime.core.api.processor.MessageProcessor;
+import org.mule.runtime.core.message.ErrorBuilder;
 
 import java.util.Map.Entry;
 
@@ -22,12 +28,33 @@ public class ExceptionToMessagingExceptionExecutionInterceptor implements Messag
 
   private MuleContext muleContext;
   private FlowConstruct flowConstruct;
+  private ErrorTypeLocator errorTypeLocator;
 
   @Override
   public MuleEvent execute(MessageProcessor messageProcessor, MuleEvent event) throws MessagingException {
     try {
       return messageProcessor.process(event);
-    } catch (MessagingException messagingException) {
+    } catch (Exception exception) {
+      MessagingException messagingException;
+      if (!(exception instanceof MessagingException) || ((MessagingException) exception).getEvent().getError() == null) {
+        ErrorType errorType;
+        if (AnnotatedObject.class.isAssignableFrom(messageProcessor.getClass())) {
+          ComponentIdentifier componentIdentifier =
+              (ComponentIdentifier) ((AnnotatedObject) messageProcessor).getAnnotation(ComponentIdentifier.ANNOTATION_NAME);
+          errorType = errorTypeLocator.findComponentErrorType(componentIdentifier, exception);
+        } else {
+          errorType = errorTypeLocator.findErrorType(exception);
+        }
+        if (exception instanceof MessagingException) {
+          messagingException = (MessagingException) exception;
+        } else {
+          messagingException = new MessagingException(event, exception, messageProcessor);
+        }
+        event.setError(ErrorBuilder.builder(exception).errorType(errorType).build());
+      } else {
+        messagingException = (MessagingException) exception;
+      }
+
       if (messagingException.getFailingMessageProcessor() == null) {
         throw putContext(messagingException, messageProcessor, event);
       } else {
@@ -54,6 +81,7 @@ public class ExceptionToMessagingExceptionExecutionInterceptor implements Messag
   @Override
   public void setMuleContext(MuleContext context) {
     this.muleContext = context;
+    this.errorTypeLocator = context.getErrorTypeLocator();
   }
 
   @Override

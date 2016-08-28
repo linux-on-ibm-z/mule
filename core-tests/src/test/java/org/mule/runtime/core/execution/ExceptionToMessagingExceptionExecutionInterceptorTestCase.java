@@ -9,9 +9,13 @@ package org.mule.runtime.core.execution;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-import org.mule.runtime.core.api.MessagingException;
+import org.mule.runtime.api.message.Error;
+import org.mule.runtime.api.message.ErrorType;
+import org.mule.runtime.core.exception.ErrorTypeLocator;
+import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleException;
@@ -41,11 +45,22 @@ public class ExceptionToMessagingExceptionExecutionInterceptorTestCase extends A
   private MessagingException mockMessagingException;
   @Mock
   private MuleException mockMuleException;
+  @Mock
+  private ErrorTypeLocator mockErrorTypeLocator;
+  @Mock
+  private Error mockError;
+  @Mock
+  private ErrorType mockErrorType;
+
   private ExceptionToMessagingExceptionExecutionInterceptor cut;
 
   @Before
   public void before() {
     when(mockMessagingException.getFailingMessageProcessor()).thenCallRealMethod();
+    when(mockMessagingException.getEvent()).thenReturn(mockMuleEvent);
+    when(mockMuleContext.getErrorTypeLocator()).thenReturn(mockErrorTypeLocator);
+    when(mockMuleEvent.getError()).thenReturn(mockError);
+    when(mockErrorTypeLocator.findErrorType(any())).thenReturn(mockErrorType);
 
     cut = new ExceptionToMessagingExceptionExecutionInterceptor();
     cut.setMuleContext(mockMuleContext);
@@ -94,13 +109,13 @@ public class ExceptionToMessagingExceptionExecutionInterceptorTestCase extends A
 
   @Test
   public void errorThrown() throws MuleException {
-    Error error = new Error();
+    java.lang.Error error = new java.lang.Error();
     when(mockMessageProcessor.process(mockMuleEvent)).thenThrow(error);
     try {
       cut.execute(mockMessageProcessor, mockMuleEvent);
       fail("Exception should be thrown");
     } catch (MessagingException e) {
-      assertThat((Error) e.getCause(), is(error));
+      assertThat((java.lang.Error) e.getCause(), is(error));
     }
   }
 }

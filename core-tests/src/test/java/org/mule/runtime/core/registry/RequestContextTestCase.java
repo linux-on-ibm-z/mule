@@ -8,8 +8,18 @@ package org.mule.runtime.core.registry;
 
 import static java.time.OffsetTime.now;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.mule.runtime.core.DefaultMuleEvent.setCurrentEvent;
-import static org.mule.runtime.core.message.ErrorBuilder.builder;
+
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.time.OffsetTime;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.metadata.DataType;
@@ -27,18 +37,8 @@ import org.mule.runtime.core.api.context.notification.ProcessorsTrace;
 import org.mule.runtime.core.api.security.SecurityContext;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.message.Correlation;
-import org.mule.runtime.core.message.ErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.tck.junit4.AbstractMuleTestCase;
-
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.time.OffsetTime;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.Test;
 
 public class RequestContextTestCase extends AbstractMuleTestCase {
 
@@ -87,12 +87,18 @@ public class RequestContextTestCase extends AbstractMuleTestCase {
         Exception exception = new Exception();
         event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception))
             .build());
-        event.setError(builder(exception).build());
+        event.setError(createErrorMock(exception));
         setCurrentEvent(event);
         success.set(true);
       } catch (RuntimeException e) {
         logger.error("error in thread", e);
       }
+    }
+
+    private Error createErrorMock(Exception exception) {
+      Error errorMock = Mockito.mock(Error.class);
+      when(errorMock.getException()).thenReturn(exception);
+      return errorMock;
     }
 
   }

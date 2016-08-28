@@ -8,16 +8,17 @@ package org.mule.compatibility.core.endpoint.inbound;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mule.runtime.core.message.ErrorBuilder.builder;
+import static org.mockito.Mockito.when;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import org.mule.compatibility.core.api.endpoint.InboundEndpoint;
 import org.mule.compatibility.core.processor.AbstractMessageProcessorTestCase;
+import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleMessage;
-import org.mule.runtime.core.message.ErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
-
-import org.junit.Test;
 
 public class InboundExceptionDetailsProcessorTestCase extends AbstractMessageProcessorTestCase {
 
@@ -31,13 +32,19 @@ public class InboundExceptionDetailsProcessorTestCase extends AbstractMessagePro
     RuntimeException exception = new RuntimeException();
     event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception))
         .build());
-    event.setError(builder(exception).build());
+    event.setError(createMockError(exception));
 
     MuleEvent result = mp.process(event);
 
     assertNotNull(result);
     final int status = result.getMessage().getOutboundProperty("status", 0);
     assertEquals(500, status);
+  }
+
+  private Error createMockError(RuntimeException exception) {
+    Error mock = Mockito.mock(Error.class);
+    when(mock.getException()).thenReturn(exception);
+    return mock;
   }
 
 }
