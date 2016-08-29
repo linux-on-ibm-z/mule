@@ -37,7 +37,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
@@ -133,7 +132,7 @@ public class MuleMetadataManager implements MetadataManager, Initialisable {
    * {@inheritDoc}
    */
   @Override
-  public MetadataResult<Set<MetadataKey>> getEntityKeys(ComponentId componentId) {
+  public MetadataResult<MetadataKeysContainer> getEntityKeys(ComponentId componentId) {
     return exceptionHandledMetadataFetch(() -> findEntityMetadataProvider(componentId).getEntityKeys(),
                                          format(EXCEPTION_RESOLVING_COMPONENT_METADATA, componentId));
   }

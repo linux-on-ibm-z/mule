@@ -17,6 +17,7 @@ import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils
 import org.mule.runtime.api.metadata.EntityMetadataProvider;
 import org.mule.runtime.api.metadata.MetadataContext;
 import org.mule.runtime.api.metadata.MetadataKey;
+import org.mule.runtime.api.metadata.MetadataKeysContainer;
 import org.mule.runtime.api.metadata.MetadataResolvingException;
 import org.mule.runtime.api.metadata.descriptor.TypeMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
@@ -43,8 +44,6 @@ import org.mule.runtime.module.extension.internal.runtime.ExecutionMediator;
 import org.mule.runtime.module.extension.internal.runtime.ExtensionComponent;
 import org.mule.runtime.module.extension.internal.runtime.OperationContextAdapter;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSet;
-
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +163,7 @@ public class OperationMessageProcessor extends ExtensionComponent implements Mes
   }
 
   @Override
-  public MetadataResult<Set<MetadataKey>> getEntityKeys() throws MetadataResolvingException {
+  public MetadataResult<MetadataKeysContainer> getEntityKeys() throws MetadataResolvingException {
     final MetadataContext metadataContext = getMetadataContext();
     return withContextClassLoader(getClassLoader(this.extensionModel),
                                   () -> entityMetadataMediator.getEntityKeys(metadataContext));

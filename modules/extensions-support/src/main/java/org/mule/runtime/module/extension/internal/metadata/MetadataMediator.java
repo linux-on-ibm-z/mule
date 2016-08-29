@@ -114,7 +114,7 @@ public class MetadataMediator {
    */
   public MetadataResult<MetadataKeysContainer> getMetadataKeys(MetadataContext context) {
     final String componentResolverName = getAliasName(componentModel.getMetadataResolverFactory().getClass());
-    final MetadataKeysContainerBuilder keyBuilder = new MetadataKeysContainerBuilder();
+    final MetadataKeysContainerBuilder keyBuilder = MetadataKeysContainerBuilder.getInstance();
     if (metadataKeyParts.isEmpty()) {
       return success(keyBuilder.add(componentResolverName, ImmutableSet.of(new NullMetadataKey())).build());
     }

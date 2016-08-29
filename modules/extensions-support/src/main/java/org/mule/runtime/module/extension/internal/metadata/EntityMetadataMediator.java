@@ -12,6 +12,8 @@ import static org.mule.runtime.api.metadata.resolving.MetadataResult.success;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.runtime.api.metadata.MetadataContext;
 import org.mule.runtime.api.metadata.MetadataKey;
+import org.mule.runtime.api.metadata.MetadataKeysContainer;
+import org.mule.runtime.api.metadata.MetadataKeysContainerBuilder;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
 import org.mule.runtime.api.metadata.descriptor.OutputMetadataDescriptor;
 import org.mule.runtime.api.metadata.descriptor.TypeMetadataDescriptor;
@@ -19,6 +21,7 @@ import org.mule.runtime.api.metadata.resolving.MetadataContentResolver;
 import org.mule.runtime.api.metadata.resolving.MetadataKeysResolver;
 import org.mule.runtime.api.metadata.resolving.MetadataOutputResolver;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
+import org.mule.runtime.api.metadata.resolving.QueryEntityResolver;
 import org.mule.runtime.extension.api.introspection.metadata.MetadataResolverFactory;
 import org.mule.runtime.extension.api.introspection.metadata.QueryEntityResolverFactory;
 import org.mule.runtime.extension.api.introspection.operation.RuntimeOperationModel;
@@ -43,16 +46,16 @@ public class EntityMetadataMediator {
     this.resolverFactory = operationModel.getQueryEntityResolverFactory();
   }
 
-  public MetadataResult<Set<MetadataKey>> getEntityKeys(MetadataContext context) {
+  public MetadataResult<MetadataKeysContainer> getEntityKeys(MetadataContext context) {
     try {
-      final Set<MetadataKey> metadataKeys = resolverFactory.getQueryEntityResolver().getEntityKeys(context);
-
-      if (metadataKeys.stream().anyMatch(key -> key.getChilds().size() > 0)) {
+      QueryEntityResolver queryEntityResolver = resolverFactory.getQueryEntityResolver();
+      Set<MetadataKey> entityKeys = queryEntityResolver.getEntityKeys(context);
+      final MetadataKeysContainerBuilder keyBuilder = MetadataKeysContainerBuilder.getInstance();
+      if (entityKeys.stream().anyMatch(key -> key.getChilds().size() > 0)) {
         throw new IllegalArgumentException("Entity keys must not contain childs. "
-            + "Only single level keys are supported for Entity Metadata Retrieval");
+                                             + "Only single level keys are supported for Entity Metadata Retrieval");
       }
-
-      return success(metadataKeys);
+      return success(keyBuilder.add(queryEntityResolver.getClass().getSimpleName(), entityKeys).build());
     } catch (Exception e) {
       return failure(e);
     }
