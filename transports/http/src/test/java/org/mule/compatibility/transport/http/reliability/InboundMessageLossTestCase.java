@@ -12,13 +12,11 @@ import static org.mule.runtime.core.message.ErrorBuilder.builder;
 
 import org.mule.compatibility.transport.http.HttpConstants;
 import org.mule.functional.junit4.FunctionalTestCase;
-import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.api.MessagingException;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.exception.AbstractMessagingExceptionStrategy;
 import org.mule.runtime.core.exception.DefaultSystemExceptionStrategy;
-import org.mule.runtime.core.message.ErrorBuilder;
 import org.mule.runtime.core.message.DefaultExceptionPayload;
 import org.mule.runtime.core.routing.filters.WildcardFilter;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -124,7 +122,7 @@ public class InboundMessageLossTestCase extends FunctionalTestCase {
     public MuleEvent handleException(MessagingException ex, MuleEvent event) {
       doHandleException(ex, event);
       ex.setHandled(true);
-      return new DefaultMuleEvent(MuleMessage.builder().payload("Success!").build(), event);
+      return MuleEvent.builder(event).message(MuleMessage.builder().payload("Success!").build()).build();
     }
   }
 
@@ -141,9 +139,7 @@ public class InboundMessageLossTestCase extends FunctionalTestCase {
           .nullPayload()
           .exceptionPayload(new DefaultExceptionPayload(exception))
           .build();
-      DefaultMuleEvent resultEvent = new DefaultMuleEvent(message, event);
-      resultEvent.setError(builder(exception).build());
-      return resultEvent;
+      return MuleEvent.builder(event).message(message).error(builder(exception).build()).build();
     }
   }
 }
