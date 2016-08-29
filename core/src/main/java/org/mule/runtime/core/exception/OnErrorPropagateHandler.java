@@ -87,16 +87,12 @@ public class OnErrorPropagateHandler extends TemplateOnErrorHandler {
   }
 
   @Override
-  protected MuleEvent route(MuleEvent event, Exception t) {
+  protected MuleEvent route(MuleEvent event, Exception t) throws MuleException {
     MuleEvent resultEvent = event;
     if (isRedeliveryExhausted(t)) {
       if (redeliveryExceeded != null) {
-        try {
-          markExceptionAsHandled(t);
-          resultEvent = redeliveryExceeded.process(event);
-        } catch (MuleException e) {
-          logFatal(event, t);
-        }
+        markExceptionAsHandled(t);
+        resultEvent = redeliveryExceeded.process(event);
       } else {
         logger.info("Message redelivery exhausted. No redelivery exhausted actions configured. Message consumed.");
       }

@@ -38,13 +38,7 @@ public class ExceptionToMessagingExceptionExecutionInterceptor implements Messag
       MessagingException messagingException;
       if (!(exception instanceof MessagingException) || ((MessagingException) exception).getEvent().getError() == null) {
         ErrorType errorType;
-        if (AnnotatedObject.class.isAssignableFrom(messageProcessor.getClass())) {
-          ComponentIdentifier componentIdentifier =
-              (ComponentIdentifier) ((AnnotatedObject) messageProcessor).getAnnotation(ComponentIdentifier.ANNOTATION_NAME);
-          errorType = errorTypeLocator.findComponentErrorType(componentIdentifier, exception);
-        } else {
-          errorType = errorTypeLocator.findErrorType(exception);
-        }
+        errorType = getErrorTypeFromFailingProcessor(messageProcessor, exception);
         if (exception instanceof MessagingException) {
           messagingException = (MessagingException) exception;
         } else {
@@ -53,6 +47,10 @@ public class ExceptionToMessagingExceptionExecutionInterceptor implements Messag
         event.setError(ErrorBuilder.builder(exception).errorType(errorType).build());
       } else {
         messagingException = (MessagingException) exception;
+        if (event.getError() == null || !event.getError().getException().equals(exception)) {
+          ErrorType errorType = getErrorTypeFromFailingProcessor(messageProcessor, exception);
+          event.setError(ErrorBuilder.builder(exception).errorType(errorType).build());
+        }
       }
 
       if (messagingException.getFailingMessageProcessor() == null) {
@@ -63,6 +61,18 @@ public class ExceptionToMessagingExceptionExecutionInterceptor implements Messag
     } catch (Throwable ex) {
       throw putContext(new MessagingException(event, ex, messageProcessor), messageProcessor, event);
     }
+  }
+
+  private ErrorType getErrorTypeFromFailingProcessor(MessageProcessor messageProcessor, Exception exception) {
+    ErrorType errorType;
+    if (AnnotatedObject.class.isAssignableFrom(messageProcessor.getClass())) {
+      ComponentIdentifier componentIdentifier =
+          (ComponentIdentifier) ((AnnotatedObject) messageProcessor).getAnnotation(ComponentIdentifier.ANNOTATION_NAME);
+      errorType = errorTypeLocator.findComponentErrorType(componentIdentifier, exception);
+    } else {
+      errorType = errorTypeLocator.findErrorType(exception);
+    }
+    return errorType;
   }
 
   private MessagingException putContext(MessagingException messagingException, MessageProcessor failingMessageProcessor,

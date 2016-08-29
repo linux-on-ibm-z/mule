@@ -133,7 +133,7 @@ public class InboundMessageLossTestCase extends FunctionalTestCase {
     @Override
     public MuleEvent handleException(Exception ex, MuleEvent event) {
       doHandleException(ex, event);
-      MessagingException exception = new MessagingException(event, new RuntimeException("Bad news!"));
+      MessagingException exception = new MessagingException(event, new RuntimeException("Bad news"));
       MuleMessage message = MuleMessage.builder().nullPayload()
           .exceptionPayload(new DefaultExceptionPayload(exception))
           .build();

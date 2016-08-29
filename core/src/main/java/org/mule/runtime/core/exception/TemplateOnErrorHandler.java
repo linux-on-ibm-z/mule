@@ -104,10 +104,11 @@ public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
         TransactionCoordination.getInstance().rollbackCurrentTransaction();
       } catch (Exception ex) {
         // Do nothing
+        logger.warn(ex.getMessage());
       }
 
       event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build());
-      return event;
+      throw exception;
     }
 
     @Override
@@ -150,14 +151,16 @@ public abstract class TemplateOnErrorHandler extends AbstractExceptionListener
     }
   }
 
-  protected MuleEvent route(MuleEvent event, Exception t) {
+  protected MuleEvent route(MuleEvent event, Exception t) throws MuleException {
     if (!getMessageProcessors().isEmpty()) {
       try {
         event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(t)).build());
         MuleEvent result = configuredMessageProcessors.process(event);
         return result;
+      } catch (MessagingException e) {
+        throw e;
       } catch (Exception e) {
-        logFatal(event, e);
+        throw new MessagingException(event, e);
       }
     }
     return event;
