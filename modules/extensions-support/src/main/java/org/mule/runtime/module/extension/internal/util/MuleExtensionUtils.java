@@ -18,7 +18,6 @@ import static org.mule.runtime.extension.api.introspection.parameter.ExpressionS
 import static org.mule.runtime.extension.api.introspection.parameter.ExpressionSupport.SUPPORTED;
 import static org.springframework.util.ReflectionUtils.setField;
 
-import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleMessage;
@@ -261,8 +260,8 @@ public class MuleExtensionUtils {
         return null;
       }
     };
-    return new DefaultMuleEvent(create(flowConstruct, "InitializerEvent"),
-                                MuleMessage.builder().nullPayload().build(), REQUEST_RESPONSE, flowConstruct);
+    return MuleEvent.builder(create(flowConstruct, "InitializerEvent")).message(MuleMessage.builder().nullPayload().build())
+        .exchangePattern(REQUEST_RESPONSE).flow(flowConstruct).build();
   }
 
   /**
