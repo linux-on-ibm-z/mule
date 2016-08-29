@@ -58,6 +58,7 @@ import org.mule.runtime.extension.api.introspection.parameter.ParameterModel;
 import org.mule.runtime.extension.api.introspection.property.MetadataContentModelProperty;
 import org.mule.runtime.extension.api.introspection.property.MetadataKeyIdModelProperty;
 import org.mule.runtime.extension.api.introspection.property.MetadataKeyPartModelProperty;
+import org.mule.runtime.extension.api.introspection.property.QueryModelProperty;
 import org.mule.runtime.extension.api.introspection.property.SubTypesModelProperty;
 import org.mule.runtime.extension.api.runtime.ConfigurationInstance;
 import org.mule.runtime.extension.api.runtime.ConfigurationProvider;
@@ -190,12 +191,14 @@ public abstract class AbstractOperationMessageProcessorTestCase extends Abstract
     when(keyParamMock.getModelProperty(MetadataKeyPartModelProperty.class))
         .thenReturn(Optional.of(new MetadataKeyPartModelProperty(0)));
     when(keyParamMock.getModelProperty(MetadataContentModelProperty.class)).thenReturn(empty());
+    when(keyParamMock.getModelProperty(QueryModelProperty.class)).thenReturn(empty());
 
     when(contentMock.getName()).thenReturn("content");
     when(contentMock.getType()).thenReturn(stringType);
     when(contentMock.getModelProperty(MetadataContentModelProperty.class))
         .thenReturn(Optional.of(new MetadataContentModelProperty()));
     when(contentMock.getModelProperty(MetadataKeyPartModelProperty.class)).thenReturn(empty());
+    when(contentMock.getModelProperty(QueryModelProperty.class)).thenReturn(empty());
 
     when(operationModel.getParameterModels()).thenReturn(Arrays.asList(keyParamMock, contentMock));
 
