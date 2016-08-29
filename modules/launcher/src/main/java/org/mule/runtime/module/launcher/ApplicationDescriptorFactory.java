@@ -106,10 +106,10 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
 
   private ArtifactClassLoaderFilter createApplicationClassLoaderFilter(URL[] libraries) {
 
-    return new DefaultArtifactClassLoaderFilter(findExportedPackages(libraries), emptySet())
-    {
+    return new DefaultArtifactClassLoaderFilter(findExportedPackages(libraries), emptySet()) {
 
-      @Override public boolean exportsResource(String name) {
+      @Override
+      public boolean exportsResource(String name) {
         return true;
       }
     };

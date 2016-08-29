@@ -71,7 +71,7 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
     sb.append(String.format("[%s] Loading the following jars:%n", descriptor.getName()));
     sb.append("=============================").append(SystemUtils.LINE_SEPARATOR);
 
-    for (URL url: urls) {
+    for (URL url : urls) {
       sb.append(url).append(SystemUtils.LINE_SEPARATOR);
     }
 
