@@ -16,12 +16,15 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import sun.misc.CompoundEnumeration;
 
-//TODO(pablo.kraan): isolation - add unit tests
+//TODO(pablo.kraan): isolation - add javadoc
 public class RegionClassLoader extends MuleArtifactClassLoader {
+
+  static {
+    registerAsParallelCapable();
+  }
 
   private final List<ArtifactClassLoader> classLoaders = new ArrayList<>();
   private final Map<String, ArtifactClassLoader> packageMapping = new HashMap<>();
@@ -31,13 +34,12 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
     super(name, urls, parent, lookupPolicy);
   }
 
-  public void addClassLoader(ArtifactClassLoader artifactClassLoader, Set<String> exportedPackages,
-                             Set<String> exportedResources) {
+  public void addClassLoader(ArtifactClassLoader artifactClassLoader, ArtifactClassLoaderFilter filter) {
     classLoaders.add(artifactClassLoader);
 
-    exportedPackages.forEach(p -> packageMapping.put(p, artifactClassLoader));
+    filter.getExportedClassPackages().forEach(p -> packageMapping.put(p, artifactClassLoader));
 
-    for (String exportedResource : exportedResources) {
+    for (String exportedResource : filter.getExportedResources()) {
       List<ArtifactClassLoader> classLoaders = resourceMapping.get(exportedResource);
 
       if (classLoaders == null) {
@@ -52,13 +54,15 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
   @Override
   //TODO(pablo.kraan): isolation - add a new method to search classes in the artifact container only, to avoid exposing findClass method
   public Class<?> findClass(String name) throws ClassNotFoundException {
-    final String packageName = ClassUtils.getPackageName(name);
+    synchronized (getClassLoadingLock(name)) {
+      final String packageName = ClassUtils.getPackageName(name);
 
-    final ArtifactClassLoader artifactClassLoader = packageMapping.get(packageName);
-    if (artifactClassLoader != null) {
-      return artifactClassLoader.findClass(name);
-    } else {
-      return classLoaders.get(0).findClass(name);
+      final ArtifactClassLoader artifactClassLoader = packageMapping.get(packageName);
+      if (artifactClassLoader != null) {
+        return artifactClassLoader.findClass(name);
+      } else {
+        return classLoaders.get(0).findClass(name);
+      }
     }
   }
 

@@ -8,12 +8,12 @@ package org.mule.runtime.module.launcher;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
 import static org.apache.commons.collections.CollectionUtils.find;
 import static org.mule.runtime.core.config.i18n.MessageFactory.createStaticMessage;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.util.Preconditions.checkState;
 import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_FIRST;
+import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER;
 import org.mule.runtime.core.util.UUID;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
@@ -135,12 +135,11 @@ public abstract class AbstractArtifactClassLoaderBuilder<T extends AbstractArtif
     final ArtifactClassLoader artifactClassLoader =
         artifactClassLoaderFactory.create(regionClassLoader, artifactDescriptor, artifactPluginClassLoaders);
 
-    regionClassLoader.addClassLoader(artifactClassLoader, emptySet(), emptySet());
+    regionClassLoader.addClassLoader(artifactClassLoader, NULL_CLASSLOADER_FILTER);
 
     for (int i = 0; i < effectiveArtifactPluginDescriptors.size(); i++) {
       final ArtifactClassLoaderFilter classLoaderFilter = effectiveArtifactPluginDescriptors.get(i).getClassLoaderFilter();
-      regionClassLoader.addClassLoader(pluginClassLoaders.get(i), classLoaderFilter.getExportedClassPackages(),
-                                       classLoaderFilter.getExportedResources());
+      regionClassLoader.addClassLoader(pluginClassLoaders.get(i), classLoaderFilter);
     }
     return artifactClassLoader;
   }

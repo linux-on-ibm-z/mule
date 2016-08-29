@@ -9,9 +9,9 @@ package org.mule.functional.classloading.isolation.classloader;
 
 import static java.lang.Boolean.valueOf;
 import static java.lang.System.getProperty;
-import static java.util.Collections.emptySet;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_LOG_VERBOSE_CLASSLOADING;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
+import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER;
 import static org.mule.runtime.module.extension.internal.ExtensionProperties.EXTENSION_MANIFEST_FILE_NAME;
 import org.mule.functional.api.classloading.isolation.ArtifactClassLoaderHolder;
 import org.mule.functional.api.classloading.isolation.ArtifactUrlClassification;
@@ -22,11 +22,11 @@ import org.mule.runtime.container.internal.MuleModule;
 import org.mule.runtime.extension.api.manifest.ExtensionManifest;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
-import org.mule.runtime.module.artifact.classloader.ClassLoaderFilterFactory;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilterFactory;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilter;
+import org.mule.runtime.module.artifact.classloader.ClassLoaderFilterFactory;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.classloader.CompositeClassLoader;
-import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilterFactory;
 import org.mule.runtime.module.artifact.classloader.FilteringArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.MuleClassLoaderLookupPolicy;
@@ -102,13 +102,12 @@ public class IsolatedClassLoaderFactory {
     ArtifactClassLoader appClassLoader =
         createApplicationArtifactClassLoader(regionClassLoader, childClassLoaderLookupPolicy, artifactUrlClassification);
 
-    regionClassLoader.addClassLoader(appClassLoader, emptySet(), emptySet());
+    regionClassLoader.addClassLoader(appClassLoader, NULL_CLASSLOADER_FILTER);
 
     for (int i = 0; i < filteredPluginsArtifactClassLoaders.size(); i++) {
 
       final ArtifactClassLoaderFilter classLoaderFilter = pluginArtifactClassLoaderFilters.get(i);
-      regionClassLoader.addClassLoader(filteredPluginsArtifactClassLoaders.get(i), classLoaderFilter.getExportedClassPackages(),
-                                       classLoaderFilter.getExportedResources());
+      regionClassLoader.addClassLoader(filteredPluginsArtifactClassLoaders.get(i), classLoaderFilter);
     }
 
     return new ArtifactClassLoaderHolder(containerClassLoader, pluginsArtifactClassLoaders, regionClassLoader);

@@ -85,11 +85,13 @@ public class DefaultArtifactClassLoaderFilter implements ArtifactClassLoaderFilt
     return exportedResources.contains(sanitizeResourceName);
   }
 
-  @Override public Set<String> getExportedClassPackages() {
+  @Override
+  public Set<String> getExportedClassPackages() {
     return exportedClassPackages;
   }
 
-  @Override public Set<String> getExportedResources() {
+  @Override
+  public Set<String> getExportedResources() {
     return exportedResources;
   }
 

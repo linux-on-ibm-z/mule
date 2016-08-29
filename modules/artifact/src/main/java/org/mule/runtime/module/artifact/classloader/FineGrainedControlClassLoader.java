@@ -12,7 +12,11 @@ import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStra
 import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_ONLY;
 import org.mule.runtime.module.artifact.classloader.exception.CompositeClassNotFoundException;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Enumeration;
+
+import sun.misc.CompoundEnumeration;
 
 /**
  * Defines a {@link ClassLoader} which enables the control of the class loading lookup mode.
@@ -84,6 +88,27 @@ public class FineGrainedControlClassLoader extends GoodCitizenClassLoader implem
     } else {
       return findSystemClass(name);
     }
+  }
+
+  @Override
+  public URL getResource(String name) {
+    URL url = findResource(name);
+    if (url == null && getParent() != null) {
+
+      url = getParent().getResource(name);
+    }
+    return url;
+  }
+
+  @Override
+  public Enumeration<URL> getResources(String name) throws IOException {
+    Enumeration<URL>[] tmp = (Enumeration<URL>[]) new Enumeration<?>[2];
+    tmp[0] = findResources(name);
+    if (getParent() != null) {
+      tmp[1] = getParent().getResources(name);
+    }
+
+    return new CompoundEnumeration<>(tmp);
   }
 
   @Override

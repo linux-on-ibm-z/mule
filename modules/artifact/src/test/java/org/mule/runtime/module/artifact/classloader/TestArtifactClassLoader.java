@@ -53,6 +53,6 @@ public class TestArtifactClassLoader extends TestClassLoader implements Artifact
 
   @Override
   public Class<?> findClass(String name) throws ClassNotFoundException {
-    return null;
+    return super.findClass(name);
   }
 }
