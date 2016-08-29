@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.core.MessageExchangePattern.ONE_WAY;
 
-import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.api.MessagingException;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleMessage;
@@ -53,7 +52,7 @@ public class ExceptionTestCase extends AbstractELTestCase {
     MuleMessage message = event.getMessage();
     MessagingException me =
         new MessagingException(CoreMessages.createStaticMessage(""),
-                               new DefaultMuleEvent(context, message, ONE_WAY, flowConstruct),
+                               MuleEvent.builder(context).message(message).exchangePattern(ONE_WAY).flow(flowConstruct).build(),
                                new IllegalAccessException());
     event.setError(ErrorBuilder.builder(me).build());
     assertTrue((Boolean) evaluate("exception.causedBy(java.lang.IllegalAccessException)", event));

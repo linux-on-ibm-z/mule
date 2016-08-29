@@ -9,6 +9,7 @@ package org.mule.runtime.core;
 import static org.mule.runtime.core.MessageExchangePattern.ONE_WAY;
 
 import org.mule.runtime.core.api.MuleEvent;
+import org.mule.runtime.core.api.MuleEvent.Builder;
 import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.construct.Flow;
 import org.mule.runtime.core.util.IOUtils;
@@ -44,7 +45,7 @@ public class MuleEventCopyPerformanceTestCase extends AbstractMuleContextTestCas
   public void before() throws IOException {
     payload = IOUtils.getResourceAsString("test-data.json", getClass());
     events = new MuleEvent[repetitions];
-    muleEventWith0Properties = createMuleEvent();
+    muleEventWith0Properties = createMuleEvent(MuleMessage.builder().payload(payload).build(), 0);
     muleEventWith10Properties = createMuleEventWithFlowVarsAndProperties(10);
     muleEventWith50Properties = createMuleEventWithFlowVarsAndProperties(50);
     muleEventWith100Properties = createMuleEventWithFlowVarsAndProperties(100);
@@ -138,28 +139,28 @@ public class MuleEventCopyPerformanceTestCase extends AbstractMuleContextTestCas
     }
   }
 
-  protected DefaultMuleEvent createMuleEvent() {
+  protected MuleEvent createMuleEvent(MuleMessage message, int numProperties) {
     Flow flow;
     try {
       flow = getTestFlow();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    return new DefaultMuleEvent(DefaultMessageContext.create(flow, TEST_CONNECTOR),
-                                MuleMessage.builder().payload(payload).build(), ONE_WAY, flow);
+    final Builder builder = MuleEvent.builder(DefaultMessageContext.create(flow, TEST_CONNECTOR)).message(message)
+        .exchangePattern(ONE_WAY).flow(flow);
+    for (int i = 1; i <= numProperties; i++) {
+      builder.addFlowVariable("FlOwVaRiAbLeKeY" + i, "val");
+    }
+    return builder.build();
   }
 
-  protected DefaultMuleEvent createMuleEventWithFlowVarsAndProperties(int numProperties) {
+  protected MuleEvent createMuleEventWithFlowVarsAndProperties(int numProperties) {
     MuleMessage.Builder builder = MuleMessage.builder().payload(payload);
     for (int i = 1; i <= numProperties; i++) {
       builder.addInboundProperty("InBoUnDpRoPeRtYkEy" + i, "val");
     }
     MuleMessage message = builder.build();
-    DefaultMuleEvent event = createMuleEvent();
-    event.setMessage(message);
-    for (int i = 1; i <= numProperties; i++) {
-      event.setFlowVariable("FlOwVaRiAbLeKeY" + i, "val");
-    }
+    MuleEvent event = createMuleEvent(message, numProperties);
     return event;
   }
 
