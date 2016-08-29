@@ -1496,7 +1496,6 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
 
   @Test
   public void deploysMultiPluginVersionLib() throws Exception {
-    //TODO(pablo.kraan): isolation - need a new tests using two plugins defining the same resource (like spring.schemas)
     addPackedAppFromBuilder(multiLibPluginAppFileBuilder);
 
     startDeployment();
