@@ -49,7 +49,7 @@ public class ExtensibleExtensionOperationsTestCase extends AbstractAnnotationsBa
   private void assertOperationExtensionOf(String operationName, Class propertyType) {
     ExtensionDeclaration extensionDeclaration =
         getDescriber().describe(new DefaultDescribingContext(getClass().getClassLoader())).getDeclaration();
-    OperationDeclaration operation = getOperation(extensionDeclaration.getConfigurations().get(0), operationName);
+    OperationDeclaration operation = getOperation(extensionDeclaration, operationName);
 
     ExtendingOperationModelProperty<ExtensibleExtension> modelProperty =
         operation.getModelProperty(ExtendingOperationModelProperty.class).get();

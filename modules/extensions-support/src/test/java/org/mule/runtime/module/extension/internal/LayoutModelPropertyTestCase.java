@@ -63,7 +63,7 @@ public class LayoutModelPropertyTestCase extends AbstractAnnotationsBasedDescrib
   public void parseLayoutAnnotationsOnOperationParameter() {
     ExtensionDeclarer declarer = describeExtension();
     ExtensionDeclaration extensionDeclaration = declarer.getDeclaration();
-    OperationDeclaration operation = getOperation(extensionDeclaration.getConfigurations().get(0), KILL_CUSTOM_OPERATION);
+    OperationDeclaration operation = getOperation(extensionDeclaration, KILL_CUSTOM_OPERATION);
 
     assertThat(operation, is(notNullValue()));
     List<ParameterDeclaration> parameters = operation.getParameters();

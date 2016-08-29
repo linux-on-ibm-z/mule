@@ -71,7 +71,7 @@ public class DisplayModelEnricherTestCase extends AbstractMuleTestCase {
   public void parseDisplayNameAnnotationOnOperationParameter() {
     ExtensionDeclaration extensionDeclaration = declarer.getDeclaration();
     OperationDeclaration operation =
-        getOperation(extensionDeclaration.getConfigurations().get(0), HeisenbergOperations.OPERATION_WITH_DISPLAY_NAME_PARAMETER);
+        getOperation(extensionDeclaration, HeisenbergOperations.OPERATION_WITH_DISPLAY_NAME_PARAMETER);
 
     assertThat(operation, is(notNullValue()));
     List<ParameterDeclaration> parameters = operation.getParameters();
@@ -92,7 +92,7 @@ public class DisplayModelEnricherTestCase extends AbstractMuleTestCase {
   public void parseSummaryAnnotationOnOperationParameter() {
     ExtensionDeclaration extensionDeclaration = declarer.getDeclaration();
     OperationDeclaration operation =
-        getOperation(extensionDeclaration.getConfigurations().get(0), HeisenbergOperations.OPERATION_WITH_SUMMARY);
+        getOperation(extensionDeclaration, HeisenbergOperations.OPERATION_WITH_SUMMARY);
 
     assertThat(operation, is(notNullValue()));
     List<ParameterDeclaration> parameters = operation.getParameters();

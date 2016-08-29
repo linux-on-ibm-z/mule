@@ -50,7 +50,6 @@ import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.ParameterGroup;
-import org.mule.runtime.extension.api.annotation.Sources;
 import org.mule.runtime.extension.api.annotation.connector.ConnectionProviders;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.UseConfig;
@@ -65,7 +64,6 @@ import org.mule.runtime.extension.api.introspection.declaration.fluent.OutputDec
 import org.mule.runtime.extension.api.introspection.declaration.fluent.ParameterDeclaration;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.SourceDeclaration;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.WithOperationsDeclaration;
-import org.mule.runtime.extension.api.introspection.declaration.fluent.WithSourcesDeclaration;
 import org.mule.runtime.extension.api.introspection.declaration.type.annotation.TypeAliasAnnotation;
 import org.mule.runtime.extension.api.introspection.exception.ExceptionEnricherFactory;
 import org.mule.runtime.extension.api.introspection.parameter.ExpressionSupport;
@@ -244,7 +242,7 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
   public void messageOperationWithoutGenerics() throws Exception {
     ExtensionDeclarer declarer = describerFor(HeisenbergWithGenericlessMessageOperation.class)
         .describe(new DefaultDescribingContext(HeisenbergWithSameOperationsAndConfigs.class.getClassLoader()));
-    OperationDeclaration operation = getOperation(declarer.getDeclaration().getConfigurations().get(0), "noGenerics");
+    OperationDeclaration operation = getOperation(declarer.getDeclaration(), "noGenerics");
 
     assertThat(operation.getOutput().getType(), is(instanceOf(AnyType.class)));
     assertThat(operation.getOutputAttributes().getType(), is(instanceOf(NullType.class)));
@@ -332,7 +330,6 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
         .orElseThrow(() -> new NoSuchElementException());
   }
 
-
   private void assertTestModuleConfiguration(ExtensionDeclaration extensionDeclaration) throws Exception {
     assertThat(extensionDeclaration.getConfigurations(), hasSize(1));
     ConfigurationDeclaration conf = extensionDeclaration.getConfigurations().get(0);
@@ -416,36 +413,36 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
   }
 
   private void assertTestModuleOperations(ExtensionDeclaration extensionDeclaration) throws Exception {
-    assertThat(extensionDeclaration.getOperations(), hasSize(0));
+    assertThat(extensionDeclaration.getOperations(), hasSize(22));
 
     WithOperationsDeclaration withOperationsDeclaration = extensionDeclaration.getConfigurations().get(0);
-    assertThat(withOperationsDeclaration.getOperations().size(), is(30));
+    assertThat(withOperationsDeclaration.getOperations().size(), is(8));
     assertOperation(withOperationsDeclaration, SAY_MY_NAME_OPERATION, "");
     assertOperation(withOperationsDeclaration, GET_ENEMY_OPERATION, "");
-    assertOperation(withOperationsDeclaration, KILL_OPERATION, "");
-    assertOperation(withOperationsDeclaration, KILL_CUSTOM_OPERATION, "");
-    assertOperation(withOperationsDeclaration, KILL_WITH_WEAPON, "");
-    assertOperation(withOperationsDeclaration, KILL_WITH_RICINS, "");
-    assertOperation(withOperationsDeclaration, KILL_WITH_MULTIPLES_WEAPONS, "");
-    assertOperation(withOperationsDeclaration, KILL_WITH_MULTIPLE_WILDCARD_WEAPONS, "");
+    assertOperation(extensionDeclaration, KILL_OPERATION, "");
+    assertOperation(extensionDeclaration, KILL_CUSTOM_OPERATION, "");
+    assertOperation(extensionDeclaration, KILL_WITH_WEAPON, "");
+    assertOperation(extensionDeclaration, KILL_WITH_RICINS, "");
+    assertOperation(extensionDeclaration, KILL_WITH_MULTIPLES_WEAPONS, "");
+    assertOperation(extensionDeclaration, KILL_WITH_MULTIPLE_WILDCARD_WEAPONS, "");
     assertOperation(withOperationsDeclaration, GET_PAYMENT_FROM_EVENT_OPERATION, "");
     assertOperation(withOperationsDeclaration, GET_PAYMENT_FROM_MESSAGE_OPERATION, "");
     assertOperation(withOperationsDeclaration, DIE, "");
-    assertOperation(withOperationsDeclaration, KILL_MANY, "");
-    assertOperation(withOperationsDeclaration, KILL_ONE, "");
+    assertOperation(extensionDeclaration, KILL_MANY, "");
+    assertOperation(extensionDeclaration, KILL_ONE, "");
     assertOperation(withOperationsDeclaration, LAUNDER_MONEY, "");
-    assertOperation(withOperationsDeclaration, INJECTED_EXTENSION_MANAGER, "");
-    assertOperation(withOperationsDeclaration, ALIAS, "");
+    assertOperation(extensionDeclaration, INJECTED_EXTENSION_MANAGER, "");
+    assertOperation(extensionDeclaration, ALIAS, "");
     assertOperation(withOperationsDeclaration, CALL_SAUL, "");
-    assertOperation(withOperationsDeclaration, CALL_GUS_FRING, "");
+    assertOperation(extensionDeclaration, CALL_GUS_FRING, "");
     assertOperation(withOperationsDeclaration, GET_SAUL_PHONE, "");
-    assertOperation(withOperationsDeclaration, GET_MEDICAL_HISTORY, "");
-    assertOperation(withOperationsDeclaration, GET_GRAMS_IN_STORAGE, "");
-    assertOperation(withOperationsDeclaration, APPROVE_INVESTMENT, "");
-    assertOperation(withOperationsDeclaration, GET_PAGED_PERSONAL_INFO_OPERATION, "");
-    assertOperation(withOperationsDeclaration, EMPTY_PAGED_OPERATION, "");
-    assertOperation(withOperationsDeclaration, FAILING_PAGED_OPERATION, "");
-    assertOperation(withOperationsDeclaration, CONNECTION_PAGED_OPERATION, "");
+    assertOperation(extensionDeclaration, GET_MEDICAL_HISTORY, "");
+    assertOperation(extensionDeclaration, GET_GRAMS_IN_STORAGE, "");
+    assertOperation(extensionDeclaration, APPROVE_INVESTMENT, "");
+    assertOperation(extensionDeclaration, GET_PAGED_PERSONAL_INFO_OPERATION, "");
+    assertOperation(extensionDeclaration, EMPTY_PAGED_OPERATION, "");
+    assertOperation(extensionDeclaration, FAILING_PAGED_OPERATION, "");
+    assertOperation(extensionDeclaration, CONNECTION_PAGED_OPERATION, "");
 
     OperationDeclaration operation = getOperation(withOperationsDeclaration, SAY_MY_NAME_OPERATION);
     assertThat(operation, is(notNullValue()));
@@ -458,7 +455,7 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
     assertThat(operation.getOutputAttributes().getType(), equalTo(toMetadataType(IntegerAttributes.class)));
     assertParameter(operation.getParameters(), "index", "", toMetadataType(int.class), false, SUPPORTED, "0");
 
-    operation = getOperation(withOperationsDeclaration, KILL_OPERATION);
+    operation = getOperation(extensionDeclaration, KILL_OPERATION);
     assertThat(operation, is(notNullValue()));
     assertThat(operation.getParameters(), hasSize(2));
     assertThat(operation.getOutput().getType(), equalTo(toMetadataType(String.class)));
@@ -466,7 +463,7 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
     assertParameter(operation.getParameters(), "victim", "", toMetadataType(String.class), false, SUPPORTED, "#[payload]");
     assertParameter(operation.getParameters(), "goodbyeMessage", "", toMetadataType(String.class), true, SUPPORTED, null);
 
-    operation = getOperation(withOperationsDeclaration, KILL_WITH_WEAPON);
+    operation = getOperation(extensionDeclaration, KILL_WITH_WEAPON);
     assertThat(operation, is(notNullValue()));
     assertThat(operation.getParameters(), hasSize(3));
     assertParameter(operation.getParameters(), "weapon", "", toMetadataType(Weapon.class), true, SUPPORTED, null);
@@ -474,25 +471,25 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
     assertParameter(operation.getParameters(), "attributesOfWeapon", "", toMetadataType(Weapon.WeaponAttributes.class), true,
                     SUPPORTED, null);
 
-    operation = getOperation(withOperationsDeclaration, KILL_WITH_RICINS);
+    operation = getOperation(extensionDeclaration, KILL_WITH_RICINS);
     assertThat(operation, is(notNullValue()));
     assertThat(operation.getParameters(), hasSize(1));
     assertParameter(operation.getParameters(), "ricinList", "", arrayOf(List.class, objectTypeBuilder(Ricin.class)), false,
                     SUPPORTED, "#[payload]");
 
-    operation = getOperation(withOperationsDeclaration, KILL_WITH_MULTIPLES_WEAPONS);
+    operation = getOperation(extensionDeclaration, KILL_WITH_MULTIPLES_WEAPONS);
     assertThat(operation, is(notNullValue()));
     assertThat(operation.getParameters(), hasSize(1));
     assertParameter(operation.getParameters(), "weaponList", "", arrayOf(List.class, objectTypeBuilder(Weapon.class)), false,
                     SUPPORTED, "#[payload]");
 
-    operation = getOperation(withOperationsDeclaration, KILL_WITH_MULTIPLE_WILDCARD_WEAPONS);
+    operation = getOperation(extensionDeclaration, KILL_WITH_MULTIPLE_WILDCARD_WEAPONS);
     assertThat(operation, is(notNullValue()));
     assertThat(operation.getParameters(), hasSize(1));
     assertParameter(operation.getParameters(), "wildCardWeapons", "", arrayOf(List.class, objectTypeBuilder(Weapon.class)), true,
                     SUPPORTED, null);
 
-    operation = getOperation(withOperationsDeclaration, KILL_CUSTOM_OPERATION);
+    operation = getOperation(extensionDeclaration, KILL_CUSTOM_OPERATION);
     assertThat(operation, is(notNullValue()));
     assertThat(operation.getParameters(), hasSize(2));
     assertParameter(operation.getParameters(), "victim", "", toMetadataType(String.class), false, SUPPORTED, "#[payload]");
@@ -511,52 +508,52 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
     operation = getOperation(withOperationsDeclaration, LAUNDER_MONEY);
     assertParameter(operation.getParameters(), "amount", "", toMetadataType(long.class), true, SUPPORTED, null);
 
-    operation = getOperation(withOperationsDeclaration, INJECTED_EXTENSION_MANAGER);
+    operation = getOperation(extensionDeclaration, INJECTED_EXTENSION_MANAGER);
     assertThat(operation, is(notNullValue()));
     assertThat(operation.getParameters().isEmpty(), is(true));
 
-    operation = getOperation(withOperationsDeclaration, ALIAS);
+    operation = getOperation(extensionDeclaration, ALIAS);
     assertParameter(operation.getParameters(), "greeting", "", toMetadataType(String.class), true, SUPPORTED, null);
     assertParameter(operation.getParameters(), "myName", "", toMetadataType(String.class), false, SUPPORTED, HEISENBERG);
     assertParameter(operation.getParameters(), "age", "", toMetadataType(Integer.class), false, SUPPORTED, AGE);
 
-    operation = getOperation(withOperationsDeclaration, KNOCK);
+    operation = getOperation(extensionDeclaration, KNOCK);
     assertParameter(operation.getParameters(), "knockedDoor", "", toMetadataType(KnockeableDoor.class), true, SUPPORTED, null);
 
-    operation = getOperation(withOperationsDeclaration, KNOCK_MANY);
+    operation = getOperation(extensionDeclaration, KNOCK_MANY);
     assertParameter(operation.getParameters(), "doors", "", arrayOf(List.class, objectTypeBuilder(KnockeableDoor.class)), true,
                     SUPPORTED, null);
 
     operation = getOperation(withOperationsDeclaration, CALL_SAUL);
     assertThat(operation.getParameters(), is(empty()));
 
-    operation = getOperation(withOperationsDeclaration, CURE_CANCER);
+    operation = getOperation(extensionDeclaration, CURE_CANCER);
     assertThat(operation.getParameters(), is(empty()));
     java.util.Optional<ExceptionEnricherFactory> exceptionEnricherFactory = operation.getExceptionEnricherFactory();
     assertThat(exceptionEnricherFactory.isPresent(), is(true));
     assertThat(exceptionEnricherFactory.get().createEnricher(), instanceOf(CureCancerExceptionEnricher.class));
 
-    operation = getOperation(withOperationsDeclaration, GET_MEDICAL_HISTORY);
+    operation = getOperation(extensionDeclaration, GET_MEDICAL_HISTORY);
     assertParameter(operation.getParameters(), "healthByYear", "",
                     TYPE_BUILDER.dictionaryType().id(Map.class.getName())
                         .ofKey(TYPE_BUILDER.numberType().id(Integer.class.getName()))
                         .ofValue(TYPE_LOADER.load(HealthStatus.class)).build(),
                     true, SUPPORTED, null);
 
-    operation = getOperation(withOperationsDeclaration, GET_GRAMS_IN_STORAGE);
+    operation = getOperation(extensionDeclaration, GET_GRAMS_IN_STORAGE);
     assertThat(operation, is(notNullValue()));
     assertParameter(operation.getParameters(), "grams", "", TYPE_LOADER.load(int[][].class), false, SUPPORTED, "#[payload]");
     assertThat(operation.getOutput().getType(), is(TYPE_LOADER.load(int[][].class)));
 
-    operation = getOperation(withOperationsDeclaration, APPROVE_INVESTMENT);
+    operation = getOperation(extensionDeclaration, APPROVE_INVESTMENT);
     assertThat(operation, is(notNullValue()));
     assertParameter(operation.getParameters(), "investment", "", TYPE_LOADER.load(Investment.class), true, SUPPORTED, null);
     assertThat(getType(operation.getOutput().getType()), equalTo(getType(TYPE_LOADER.load(Investment.class))));
 
-    operation = getOperation(withOperationsDeclaration, IGNORED_OPERATION);
+    operation = getOperation(extensionDeclaration, IGNORED_OPERATION);
     assertThat(operation, is(nullValue()));
 
-    operation = getOperation(withOperationsDeclaration, GET_PAGED_PERSONAL_INFO_OPERATION);
+    operation = getOperation(extensionDeclaration, GET_PAGED_PERSONAL_INFO_OPERATION);
     assertThat(operation.getModelProperty(PagedOperationModelProperty.class).isPresent(), is(true));
     assertThat(operation.getOutput().getType(), is(TYPE_LOADER.load(PersonalInfo.class)));
   }
@@ -578,10 +575,8 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
 
   private void assertTestModuleMessageSource(ExtensionDeclaration extensionDeclaration) throws Exception {
     assertThat(extensionDeclaration.getMessageSources(), hasSize(0));
-    WithSourcesDeclaration withSourcesDeclaration = extensionDeclaration.getConfigurations().get(0);
 
-    assertThat(withSourcesDeclaration.getMessageSources().size(), is(1));
-    SourceDeclaration source = (SourceDeclaration) withSourcesDeclaration.getMessageSources().get(0);
+    SourceDeclaration source = extensionDeclaration.getConfigurations().get(0).getMessageSources().get(0);
     assertThat(source.getName(), is(SOURCE_NAME));
 
     List<ParameterDeclaration> parameters = source.getParameters();
@@ -630,16 +625,13 @@ public class AnnotationsBasedDescriberTestCase extends AbstractAnnotationsBasedD
 
   @Extension(name = OTHER_HEISENBERG, description = EXTENSION_DESCRIPTION)
   @Configurations(HeisenbergExtension.class)
-  @Operations({HeisenbergOperations.class, MoneyLaunderingOperation.class})
   @ConnectionProviders(HeisenbergConnectionProvider.class)
-  @Sources(HeisenbergSource.class)
   public static class HeisenbergPointer extends HeisenbergExtension {
 
   }
 
   @Extension(name = OTHER_HEISENBERG, description = EXTENSION_DESCRIPTION)
   @Configurations({HeisenbergExtension.class, NamedHeisenbergAlternateConfig.class})
-  @Operations({HeisenbergOperations.class, MoneyLaunderingOperation.class})
   public static class HeisenbergPointerPlusExternalConfig {
 
   }

@@ -15,7 +15,7 @@ import org.mule.runtime.extension.api.introspection.config.RuntimeConfigurationM
 import org.mule.runtime.extension.api.introspection.operation.HasOperationModels;
 import org.mule.runtime.extension.api.introspection.operation.OperationModel;
 import org.mule.runtime.module.extension.internal.exception.IllegalConfigurationModelDefinitionException;
-import org.mule.runtime.module.extension.internal.model.property.ConfigTypeModelProperty;
+import org.mule.runtime.extension.api.introspection.property.ConfigTypeModelProperty;
 
 import java.util.Optional;
 
@@ -42,15 +42,15 @@ public final class ConfigurationModelValidator implements ModelValidator {
           Optional<Class<?>> operationConfigParameterType = operationModel.getModelProperty(ConfigTypeModelProperty.class)
               .map(modelProperty -> getType(modelProperty.getConfigType()));
 
-          if (operationConfigParameterType.isPresent() && !configType.isAssignableFrom(operationConfigParameterType.get())) {
+          if (operationConfigParameterType.isPresent() && !operationConfigParameterType.get().isAssignableFrom(configType)) {
             throw new IllegalConfigurationModelDefinitionException(String.format(
-                "Extension '%s' defines operation '%s' which requires a configuration of type '%s'. However, the operation is "
-                    + "reachable from configuration '%s' of incompatible type '%s'.",
-                model.getName(),
-                operationModel.getName(),
-                operationConfigParameterType.get().getName(),
-                ((RuntimeConfigurationModel) owner).getName(),
-                configType.getName()));
+                                                                                 "Extension '%s' defines operation '%s' which requires a configuration of type '%s'. However, the operation is "
+                                                                                     + "reachable from configuration '%s' of incompatible type '%s'.",
+                                                                                 model.getName(),
+                                                                                 operationModel.getName(),
+                                                                                 operationConfigParameterType.get().getName(),
+                                                                                 ((RuntimeConfigurationModel) owner).getName(),
+                                                                                 configType.getName()));
           }
         }
       }
