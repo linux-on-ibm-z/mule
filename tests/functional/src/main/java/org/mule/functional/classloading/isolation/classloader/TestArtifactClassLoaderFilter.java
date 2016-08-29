@@ -15,6 +15,7 @@ import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.util.Preconditions.checkNotNull;
 import static org.mule.runtime.core.util.StringMessageUtils.DEFAULT_MESSAGE_WIDTH;
 import org.mule.runtime.core.util.StringMessageUtils;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilter;
 
 import java.util.HashSet;
@@ -33,11 +34,11 @@ import org.slf4j.LoggerFactory;
  *
  * @since 4.0
  */
-public final class TestArtifactClassLoaderFilter implements ClassLoaderFilter {
+public final class TestArtifactClassLoaderFilter implements ArtifactClassLoaderFilter {
 
   private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private final ClassLoaderFilter classLoaderFilter;
+  private final ArtifactClassLoaderFilter classLoaderFilter;
   private final Map<String, Object> exportedClasses;
   private final Set<String> exportedPackages;
 
@@ -47,7 +48,7 @@ public final class TestArtifactClassLoaderFilter implements ClassLoaderFilter {
    * @param classLoaderFilter the original filter. Not null.
    * @param exportedClasses a {@link List} of {@link Class}es to export in addition to the original filter. Not null.
    */
-  public TestArtifactClassLoaderFilter(final ClassLoaderFilter classLoaderFilter, final List<Class> exportedClasses) {
+  public TestArtifactClassLoaderFilter(final ArtifactClassLoaderFilter classLoaderFilter, final List<Class> exportedClasses) {
     checkNotNull(classLoaderFilter, "classLoaderFilter cannot be null");
     checkNotNull(exportedClasses, "exportedClasses cannot be null");
 

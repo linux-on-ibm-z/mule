@@ -7,8 +7,6 @@
 
 package org.mule.runtime.module.artifact.classloader;
 
-import java.util.Set;
-
 /**
  * Determines if a given class or resource is exported in a plugin classloader
  */
@@ -29,11 +27,4 @@ public interface ClassLoaderFilter {
    * @return true if the resource is exported, false otherwise
    */
   boolean exportsResource(String name);
-
-  /**
-   * @return exported class packages configured on this filter. Non null.
-   */
-  Set<String> getExportedClassPackages();
-
-  Set<String> getExportedResources();
 }

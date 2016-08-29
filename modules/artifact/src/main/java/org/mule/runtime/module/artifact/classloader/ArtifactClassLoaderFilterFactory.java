@@ -13,21 +13,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Creates {@link ArtifactClassLoaderFilter} instances
+ * Creates {@link DefaultArtifactClassLoaderFilter} instances
  */
 public class ArtifactClassLoaderFilterFactory implements ClassLoaderFilterFactory {
 
   private static final String PACKAGE_SEPARATOR = "/";
 
   @Override
-  public ClassLoaderFilter create(String exportedClassPackages, String exportedResources) {
+  public ArtifactClassLoaderFilter create(String exportedClassPackages, String exportedResources) {
     Set<String> exportedArtifactPackages = getPackages(exportedClassPackages);
     Set<String> exportedArtifactResources = getPackages(exportedResources);
 
     if (exportedArtifactPackages.isEmpty() && exportedArtifactResources.isEmpty()) {
-      return ArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER;
+      return DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER;
     } else {
-      return new ArtifactClassLoaderFilter(exportedArtifactPackages, exportedArtifactResources);
+      return new DefaultArtifactClassLoaderFilter(exportedArtifactPackages, exportedArtifactResources);
     }
   }
 

@@ -18,10 +18,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppFolder;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppPluginsFolder;
-import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
+import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
 import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
+import org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilterFactory;
 import org.mule.runtime.module.launcher.application.DuplicateExportedPackageException;
 import org.mule.runtime.module.launcher.builder.ArtifactPluginFileBuilder;
@@ -76,10 +76,10 @@ public class ApplicationDescriptorFactoryTestCase extends AbstractMuleTestCase {
                                          applicationPluginRepository);
     final ArtifactPluginDescriptor expectedPluginDescriptor1 = mock(ArtifactPluginDescriptor.class);
     when(expectedPluginDescriptor1.getName()).thenReturn("plugin1");
-    when(expectedPluginDescriptor1.getClassLoaderFilter()).thenReturn(ArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER);
+    when(expectedPluginDescriptor1.getClassLoaderFilter()).thenReturn(DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER);
     final ArtifactPluginDescriptor expectedPluginDescriptor2 = mock(ArtifactPluginDescriptor.class);
     when(expectedPluginDescriptor2.getName()).thenReturn("plugin2");
-    when(expectedPluginDescriptor2.getClassLoaderFilter()).thenReturn(ArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER);
+    when(expectedPluginDescriptor2.getClassLoaderFilter()).thenReturn(DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER);
     when(pluginDescriptorFactory.create(any())).thenReturn(expectedPluginDescriptor1).thenReturn(expectedPluginDescriptor2);
 
     ApplicationDescriptor desc = applicationDescriptorFactory.create(getAppFolder(APP_NAME));
@@ -116,7 +116,7 @@ public class ApplicationDescriptorFactoryTestCase extends AbstractMuleTestCase {
     final Set<String> exportedPackages = new HashSet<>();
     exportedPackages.add("org.foo");
     exportedPackages.add("org.bar");
-    plugin2Descriptor.setClassLoaderFilter(new ArtifactClassLoaderFilter(exportedPackages, Collections.emptySet()));
+    plugin2Descriptor.setClassLoaderFilter(new DefaultArtifactClassLoaderFilter(exportedPackages, Collections.emptySet()));
     when(applicationPluginRepository.getContainerArtifactPluginDescriptors())
         .thenReturn(Collections.singletonList(plugin2Descriptor));
 

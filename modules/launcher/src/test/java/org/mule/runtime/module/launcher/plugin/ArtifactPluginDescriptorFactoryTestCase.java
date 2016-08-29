@@ -13,11 +13,12 @@ import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
-import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter.EXPORTED_RESOURCE_PROPERTY;
+import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
+import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.EXPORTED_RESOURCE_PROPERTY;
 import static org.mule.runtime.module.launcher.plugin.ArtifactPluginDescriptorFactory.PLUGIN_PROPERTIES;
 import static org.mule.runtime.module.launcher.plugin.ArtifactPluginDescriptorFactory.PROPERTY_LOADER_OVERRIDE;
 import static org.mule.runtime.core.util.FileUtils.stringToFile;
+import org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilterFactory;
@@ -48,7 +49,7 @@ public class ArtifactPluginDescriptorFactoryTestCase extends AbstractMuleTestCas
 
   @Before
   public void setUp() throws Exception {
-    when(classLoaderFilterFactory.create(null, null)).thenReturn(ArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER);
+    when(classLoaderFilterFactory.create(null, null)).thenReturn(DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER);
   }
 
   @Test
@@ -67,7 +68,7 @@ public class ArtifactPluginDescriptorFactoryTestCase extends AbstractMuleTestCas
     final String exportedClassPackages = "org.foo, org.bar";
     new PluginPropertiesBuilder(pluginFolder).exportingClassesFrom(exportedClassPackages).build();
 
-    final ArtifactClassLoaderFilter classLoaderFilter = mock(ArtifactClassLoaderFilter.class);
+    final ArtifactClassLoaderFilter classLoaderFilter = mock(DefaultArtifactClassLoaderFilter.class);
     when(classLoaderFilterFactory.create(exportedClassPackages, null)).thenReturn(classLoaderFilter);
 
     final ArtifactPluginDescriptor pluginDescriptor = descriptorFactory.create(pluginFolder);
@@ -82,7 +83,7 @@ public class ArtifactPluginDescriptorFactoryTestCase extends AbstractMuleTestCas
     final String exportedResources = "META-INF, META-INF/xml";
     new PluginPropertiesBuilder(pluginFolder).exportingResourcesFrom(exportedResources).build();
 
-    final ArtifactClassLoaderFilter classLoaderFilter = mock(ArtifactClassLoaderFilter.class);
+    final ArtifactClassLoaderFilter classLoaderFilter = mock(DefaultArtifactClassLoaderFilter.class);
     when(classLoaderFilterFactory.create(null, exportedResources)).thenReturn(classLoaderFilter);
 
     final ArtifactPluginDescriptor pluginDescriptor = descriptorFactory.create(pluginFolder);
@@ -123,7 +124,7 @@ public class ArtifactPluginDescriptorFactoryTestCase extends AbstractMuleTestCas
     private final File pluginFolder;
     private URL[] runtimeLibs = new URL[0];;
     private ClassLoaderLookupPolicy classLoaderLookupPolicy = null;
-    private ClassLoaderFilter classLoaderFilter = ArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER;
+    private ClassLoaderFilter classLoaderFilter = DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER;
 
     public PluginDescriptorChecker(File pluginFolder) {
       this.pluginFolder = pluginFolder;

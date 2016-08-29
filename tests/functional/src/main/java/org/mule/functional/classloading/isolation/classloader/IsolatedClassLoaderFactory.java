@@ -21,6 +21,7 @@ import org.mule.runtime.container.internal.ContainerClassLoaderFilterFactory;
 import org.mule.runtime.container.internal.MuleModule;
 import org.mule.runtime.extension.api.manifest.ExtensionManifest;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilterFactory;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
@@ -88,7 +89,7 @@ public class IsolatedClassLoaderFactory {
 
 
     List<ArtifactClassLoader> filteredPluginsArtifactClassLoaders = new ArrayList<>();
-    final List<ClassLoaderFilter> pluginArtifactClassLoaderFilters = new ArrayList<>();
+    final List<ArtifactClassLoaderFilter> pluginArtifactClassLoaderFilters = new ArrayList<>();
     final List<ArtifactClassLoader> pluginsArtifactClassLoaders = new ArrayList<>();
     if (!artifactUrlClassification.getPluginClassificationUrls().isEmpty()) {
       filteredPluginsArtifactClassLoaders =
@@ -105,7 +106,7 @@ public class IsolatedClassLoaderFactory {
 
     for (int i = 0; i < filteredPluginsArtifactClassLoaders.size(); i++) {
 
-      final ClassLoaderFilter classLoaderFilter = pluginArtifactClassLoaderFilters.get(i);
+      final ArtifactClassLoaderFilter classLoaderFilter = pluginArtifactClassLoaderFilters.get(i);
       regionClassLoader.addClassLoader(filteredPluginsArtifactClassLoaders.get(i), classLoaderFilter.getExportedClassPackages(),
                                        classLoaderFilter.getExportedResources());
     }
@@ -167,7 +168,7 @@ public class IsolatedClassLoaderFactory {
                                                                ClassLoaderLookupPolicy childClassLoaderLookupPolicy,
                                                                ArtifactUrlClassification artifactUrlClassification,
                                                                List<ArtifactClassLoader> pluginsArtifactClassLoaders,
-                                                               List<ClassLoaderFilter> pluginArtifactClassLoaderFilters) {
+                                                               List<ArtifactClassLoaderFilter> pluginArtifactClassLoaderFilters) {
     final List<ArtifactClassLoader> pluginClassLoaders = new ArrayList<>();
 
     for (PluginUrlClassification pluginUrlClassification : artifactUrlClassification.getPluginClassificationUrls()) {
@@ -200,7 +201,7 @@ public class IsolatedClassLoaderFactory {
       }
       String exportedPackages = exportedPackagesProperty.stream().collect(Collectors.joining(", "));
       final String exportedResources = exportedResourcesProperty.stream().collect(Collectors.joining(", "));
-      ClassLoaderFilter filter = classLoaderFilterFactory.create(exportedPackages, exportedResources);
+      ArtifactClassLoaderFilter filter = classLoaderFilterFactory.create(exportedPackages, exportedResources);
       if (!pluginUrlClassification.getExportClasses().isEmpty()) {
         filter = new TestArtifactClassLoaderFilter(filter, pluginUrlClassification.getExportClasses());
       }

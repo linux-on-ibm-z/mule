@@ -19,5 +19,5 @@ public interface ClassLoaderFilterFactory {
    * @param exportedResources comma separated list of resources to export. Can be null
    * @return a class loader filter that matches the provided configuration
    */
-  ClassLoaderFilter create(String exportedClassPackages, String exportedResources);
+  ArtifactClassLoaderFilter create(String exportedClassPackages, String exportedResources);
 }
