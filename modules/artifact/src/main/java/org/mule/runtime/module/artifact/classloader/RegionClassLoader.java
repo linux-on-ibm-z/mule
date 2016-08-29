@@ -52,16 +52,15 @@ public class RegionClassLoader extends MuleArtifactClassLoader {
   }
 
   @Override
-  //TODO(pablo.kraan): isolation - add a new method to search classes in the artifact container only, to avoid exposing findClass method
-  public Class<?> findClass(String name) throws ClassNotFoundException {
+  public Class<?> findLocalClass(String name) throws ClassNotFoundException {
     synchronized (getClassLoadingLock(name)) {
       final String packageName = ClassUtils.getPackageName(name);
 
       final ArtifactClassLoader artifactClassLoader = packageMapping.get(packageName);
       if (artifactClassLoader != null) {
-        return artifactClassLoader.findClass(name);
+        return artifactClassLoader.findLocalClass(name);
       } else {
-        return classLoaders.get(0).findClass(name);
+        return classLoaders.get(0).findLocalClass(name);
       }
     }
   }

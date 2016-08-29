@@ -33,7 +33,14 @@ public interface ArtifactClassLoader extends DisposableClassLoader, LocalResourc
    */
   Enumeration<URL> findResources(final String name) throws IOException;
 
-  Class<?> findClass(String name) throws ClassNotFoundException;
+  /**
+   * Loads the class with the specified <a href="#name">binary name</a> if defined on this class loader.
+   * 
+   * @param name The <a href="#name">binary name</a> of the class
+   * @return The resulting <tt>Class</tt> object
+   * @throws ClassNotFoundException If the class was not found
+   */
+  Class<?> findLocalClass(String name) throws ClassNotFoundException;
 
   /**
    * ClassLoader is an abstract class. Not an interface. There are parts of the code that requires a ClassLoader and others that

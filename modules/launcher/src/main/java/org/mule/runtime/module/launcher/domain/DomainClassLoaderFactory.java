@@ -184,7 +184,7 @@ public class DomainClassLoaderFactory implements DeployableArtifactClassLoaderFa
       }
 
       @Override
-      public Class<?> findClass(String name) throws ClassNotFoundException {
+      public Class<?> findLocalClass(String name) throws ClassNotFoundException {
         return null;
       }
 

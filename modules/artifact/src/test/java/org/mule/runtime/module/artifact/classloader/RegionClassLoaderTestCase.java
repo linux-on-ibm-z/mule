@@ -104,7 +104,8 @@ public class RegionClassLoaderTestCase extends AbstractMuleTestCase {
     RegionClassLoader regionClassLoader = new RegionClassLoader(APP_NAME, new URL[0], parentClassLoader, lookupPolicy);
 
     regionClassLoader.addClassLoader(appClassLoader, NULL_CLASSLOADER_FILTER);
-    regionClassLoader.addClassLoader(pluginClassLoader, new DefaultArtifactClassLoaderFilter(singleton(PACKAGE_NAME), emptySet()));
+    regionClassLoader.addClassLoader(pluginClassLoader,
+                                     new DefaultArtifactClassLoaderFilter(singleton(PACKAGE_NAME), emptySet()));
     pluginClassLoader.addClass(CLASS_NAME, PLUGIN_LOADED_CLASS);
 
     final Class loadedClass = regionClassLoader.loadClass(CLASS_NAME);

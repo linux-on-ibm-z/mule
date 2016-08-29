@@ -60,11 +60,11 @@ public class FineGrainedControlClassLoader extends GoodCitizenClassLoader implem
           result = findParentClass(name);
         } catch (ClassNotFoundException e) {
           firstException = e;
-          result = findClass(name);
+          result = findLocalClass(name);
         }
       } else {
         try {
-          result = findClass(name);
+          result = findLocalClass(name);
         } catch (ClassNotFoundException e) {
           firstException = e;
           result = findParentClass(name);
@@ -111,8 +111,7 @@ public class FineGrainedControlClassLoader extends GoodCitizenClassLoader implem
     return new CompoundEnumeration<>(tmp);
   }
 
-  @Override
-  public Class<?> findClass(String name) throws ClassNotFoundException {
+  public Class<?> findLocalClass(String name) throws ClassNotFoundException {
     synchronized (getClassLoadingLock(name)) {
       Class<?> result = findLoadedClass(name);
 
