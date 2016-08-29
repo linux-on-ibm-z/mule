@@ -14,8 +14,8 @@ import static org.mule.runtime.config.spring.dsl.spring.BeanDefinitionFactory.SP
 import static org.mule.runtime.config.spring.parsers.generic.AutoIdUtils.uniqueValue;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_CONFIGURATION;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_CONTEXT;
-import static org.mule.runtime.core.exception.DefaultErrorTypeLocator.createDefaultComponentErrorTypeLocator;
-import static org.mule.runtime.core.exception.DefaultErrorTypeRepositoryFactory.createDefaultErrorTypeRepository;
+import static org.mule.runtime.core.exception.ErrorTypeLocatorFactory.createDefaultErrorTypeLocator;
+import static org.mule.runtime.core.exception.ErrorTypeRepositoryFactory.createDefaultErrorTypeRepository;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
 import static org.springframework.context.annotation.AnnotationConfigUtils.AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME;
@@ -165,7 +165,7 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext {
   }
 
   private ErrorTypeLocator createComponentErrorTypeLocator() {
-    return createDefaultComponentErrorTypeLocator(createDefaultErrorTypeRepository());
+    return createDefaultErrorTypeLocator(createDefaultErrorTypeRepository());
   }
 
   private void determineIfOnlyNewParsingMechanismCanBeUsed() {

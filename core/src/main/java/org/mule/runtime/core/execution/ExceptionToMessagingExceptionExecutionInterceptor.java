@@ -8,7 +8,6 @@ package org.mule.runtime.core.execution;
 
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.api.meta.AnnotatedObject;
-import org.mule.runtime.core.DefaultMuleContext;
 import org.mule.runtime.core.config.ComponentIdentifier;
 import org.mule.runtime.core.exception.ErrorTypeLocator;
 import org.mule.runtime.core.exception.MessagingException;
@@ -68,9 +67,9 @@ public class ExceptionToMessagingExceptionExecutionInterceptor implements Messag
     if (AnnotatedObject.class.isAssignableFrom(messageProcessor.getClass())) {
       ComponentIdentifier componentIdentifier =
           (ComponentIdentifier) ((AnnotatedObject) messageProcessor).getAnnotation(ComponentIdentifier.ANNOTATION_NAME);
-      errorType = errorTypeLocator.findComponentErrorType(componentIdentifier, exception);
+      errorType = errorTypeLocator.lookupComponentErrorType(componentIdentifier, exception);
     } else {
-      errorType = errorTypeLocator.findErrorType(exception);
+      errorType = errorTypeLocator.lookupErrorType(exception);
     }
     return errorType;
   }

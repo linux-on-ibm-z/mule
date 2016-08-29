@@ -10,6 +10,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -22,7 +23,9 @@ import static org.mule.runtime.core.DefaultMessageContext.create;
 import static org.mule.runtime.core.MessageExchangePattern.REQUEST_RESPONSE;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
@@ -49,6 +52,10 @@ import org.mule.tck.testmodels.mule.TestTransaction;
 public class OnErrorContinueHandlerTestCase extends AbstractMuleContextTestCase {
 
   private MuleContext mockMuleContext = mock(MuleContext.class, RETURNS_DEEP_STUBS.get());
+
+  @Rule
+  public ExpectedException expectedException = none();
+
   @Mock
   private Exception mockException;
 
@@ -138,6 +145,7 @@ public class OnErrorContinueHandlerTestCase extends AbstractMuleContextTestCase 
   public void testMessageToStringNotCalledOnFailure() throws Exception {
     mockMuleEvent.setMessage(spy(muleMessage));
     mockMuleEvent = spy(mockMuleEvent);
+    when(mockException.getStackTrace()).thenReturn(new StackTraceElement[0]);
 
     Flow flow = getTestFlow();
     MuleEvent lastEventCreated = new DefaultMuleEvent(create(flow), muleMessage, flow);
@@ -150,8 +158,8 @@ public class OnErrorContinueHandlerTestCase extends AbstractMuleContextTestCase 
 
     when(mockMuleEvent.getMessage().toString()).thenThrow(new RuntimeException("MuleMessage.toString() should not be called"));
 
-    MuleEvent exceptionHandlingResult =
-        exceptionHandlingResult = onErrorContinueHandler.handleException(mockException, mockMuleEvent);
+    expectedException.expect(Exception.class);
+    onErrorContinueHandler.handleException(mockException, mockMuleEvent);
   }
 
   private MuleEvent createNonBlockingTestEvent() throws Exception {

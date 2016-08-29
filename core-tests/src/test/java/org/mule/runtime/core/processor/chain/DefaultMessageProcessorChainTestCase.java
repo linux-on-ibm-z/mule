@@ -25,7 +25,6 @@ import static org.mule.runtime.core.DefaultMessageContext.create;
 import static org.mule.runtime.core.MessageExchangePattern.ONE_WAY;
 import static org.mule.runtime.core.MessageExchangePattern.REQUEST_RESPONSE;
 
-import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.MessageExchangePattern;
@@ -123,7 +122,7 @@ public class DefaultMessageProcessorChainTestCase extends AbstractMuleContextTes
     when(muleConfiguration.getShutdownTimeout()).thenReturn(1000);
     when(muleContext.getConfiguration()).thenReturn(muleConfiguration);
     when(muleContext.getErrorTypeLocator()).thenReturn(errorTypeLocator);
-    when(errorTypeLocator.findErrorType(any())).thenReturn(errorType);
+    when(errorTypeLocator.lookupErrorType(any())).thenReturn(errorType);
   }
 
   @After

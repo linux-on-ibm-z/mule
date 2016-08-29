@@ -9,6 +9,7 @@ package org.mule.runtime.core.execution;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +27,7 @@ import org.mule.tck.size.SmallTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -47,7 +49,7 @@ public class ExceptionToMessagingExceptionExecutionInterceptorTestCase extends A
   private MuleException mockMuleException;
   @Mock
   private ErrorTypeLocator mockErrorTypeLocator;
-  @Mock
+  @Mock(answer = RETURNS_DEEP_STUBS)
   private Error mockError;
   @Mock
   private ErrorType mockErrorType;
@@ -60,7 +62,7 @@ public class ExceptionToMessagingExceptionExecutionInterceptorTestCase extends A
     when(mockMessagingException.getEvent()).thenReturn(mockMuleEvent);
     when(mockMuleContext.getErrorTypeLocator()).thenReturn(mockErrorTypeLocator);
     when(mockMuleEvent.getError()).thenReturn(mockError);
-    when(mockErrorTypeLocator.findErrorType(any())).thenReturn(mockErrorType);
+    when(mockErrorTypeLocator.lookupErrorType(any())).thenReturn(mockErrorType);
 
     cut = new ExceptionToMessagingExceptionExecutionInterceptor();
     cut.setMuleContext(mockMuleContext);

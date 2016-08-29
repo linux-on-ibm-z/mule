@@ -6,8 +6,8 @@
  */
 package org.mule.runtime.core.context;
 
-import static org.mule.runtime.core.exception.DefaultErrorTypeLocator.createDefaultComponentErrorTypeLocator;
-import static org.mule.runtime.core.exception.DefaultErrorTypeRepositoryFactory.createDefaultErrorTypeRepository;
+import static org.mule.runtime.core.exception.ErrorTypeLocatorFactory.createDefaultErrorTypeLocator;
+import static org.mule.runtime.core.exception.ErrorTypeRepositoryFactory.createDefaultErrorTypeRepository;
 
 import javax.resource.spi.work.WorkListener;
 
@@ -55,8 +55,6 @@ import org.mule.runtime.core.context.notification.RoutingNotification;
 import org.mule.runtime.core.context.notification.SecurityNotification;
 import org.mule.runtime.core.context.notification.ServerNotificationManager;
 import org.mule.runtime.core.context.notification.TransactionNotification;
-import org.mule.runtime.core.exception.DefaultErrorTypeLocator;
-import org.mule.runtime.core.exception.DefaultErrorTypeRepositoryFactory;
 import org.mule.runtime.core.exception.DefaultSystemExceptionStrategy;
 import org.mule.runtime.core.expression.DefaultExpressionManager;
 import org.mule.runtime.core.lifecycle.MuleContextLifecycleManager;
@@ -129,7 +127,7 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder {
     JavaObjectSerializer defaultObjectSerializer = new JavaObjectSerializer();
     defaultObjectSerializer.setMuleContext(muleContext);
     muleContext.setObjectSerializer(defaultObjectSerializer);
-    muleContext.setErrorTypeLocator(createDefaultComponentErrorTypeLocator(createDefaultErrorTypeRepository()));
+    muleContext.setErrorTypeLocator(createDefaultErrorTypeLocator(createDefaultErrorTypeRepository()));
 
     return muleContext;
   }

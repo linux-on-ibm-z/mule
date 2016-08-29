@@ -10,11 +10,22 @@ import static org.mule.runtime.core.util.Preconditions.checkState;
 
 import org.mule.runtime.api.message.ErrorType;
 
+/**
+ * Mapping between a {@link Exception} type and an {@link ErrorType}.
+ * 
+ * @since 4.0
+ */
 public class ExceptionMapping implements Comparable<ExceptionMapping> {
 
   private Class<? extends Exception> exceptionType;
   private ErrorType errorType;
 
+  /**
+   * Creates a new {@link ExceptionMapper} instance.
+   * 
+   * @param exceptionType exception type to related to the error type.
+   * @param errorType error type associated with the exception type.
+   */
   ExceptionMapping(Class<? extends Exception> exceptionType, ErrorType errorType) {
     checkState(exceptionType != null, "exceptionType type cannot be null");
     checkState(errorType != null, "error type cannot be null");
@@ -22,10 +33,17 @@ public class ExceptionMapping implements Comparable<ExceptionMapping> {
     this.errorType = errorType;
   }
 
+  /**
+   * @param exception exception to check if it matches with this mapping.
+   * @return true if the exception type is associated with this mapping.
+   */
   public boolean matches(Exception exception) {
     return this.exceptionType.isAssignableFrom(exception.getClass());
   }
 
+  /**
+   * @return the error type of this mapping.
+     */
   public ErrorType getErrorType() {
     return errorType;
   }

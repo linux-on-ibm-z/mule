@@ -7,7 +7,6 @@
 package org.mule.runtime.core.exception;
 
 import static java.lang.String.format;
-import static org.mule.runtime.core.message.ErrorTypeBuilder.ANY_STRING_REPRESENTATION;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 
 import java.util.HashMap;
@@ -16,14 +15,28 @@ import java.util.Map;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.core.message.ErrorTypeBuilder;
 
+/**
+ * Repository for the different {@link ErrorType}s in a mule artifact.
+ *
+ * Only once instance of {@link ErrorType} must exists describing the same
+ * combination of error identifier and namespace.
+ *
+ * @since 4.0
+ */
 public class ErrorTypeRepository {
 
+  public static final String TRANSFORMATION_ERROR_IDENTIFIER = "TRANSFORMATION";
+  public static final String EXPRESSION_ERROR_IDENTIFIER = "EXPRESSION";
+  public static final String UNKNOWN_ERROR_IDENTIFIER = "UNKNOWN";
+  public static final String ANY_IDENTIFIER = "ANY";
+  public static final String CORE_NAMESPACE_NAME = "mule";
+
   public static final ErrorType ANY_ERROR_TYPE =
-      ErrorTypeBuilder.builder().namespace("mule").stringRepresentation(ANY_STRING_REPRESENTATION).build();
+      ErrorTypeBuilder.builder().namespace(CORE_NAMESPACE_NAME).stringRepresentation(ANY_IDENTIFIER).build();
   private Map<ErrorTypeKey, ErrorType> errorTypes = new HashMap<>();
 
   public ErrorTypeRepository() {
-    this.errorTypes.put(new ErrorTypeKey("mule", ANY_STRING_REPRESENTATION),
+    this.errorTypes.put(new ErrorTypeKey(CORE_NAMESPACE_NAME, ANY_IDENTIFIER),
                         ANY_ERROR_TYPE);
 
   }
