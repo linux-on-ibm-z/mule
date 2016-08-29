@@ -8,13 +8,20 @@ package org.mule.runtime.module.launcher;
 
 import static java.io.File.separator;
 import static java.lang.String.format;
+import static java.util.Collections.emptySet;
+import static org.apache.commons.io.FileUtils.listFiles;
 import static org.mule.runtime.container.api.MuleFoldersUtil.PLUGINS_FOLDER;
+import static org.mule.runtime.container.api.MuleFoldersUtil.getAppLibFolder;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import static org.mule.runtime.module.launcher.artifact.ArtifactFactoryUtils.getDeploymentFile;
 import static org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor.DEFAULT_APP_PROPERTIES_RESOURCE;
 import org.mule.runtime.core.util.PropertiesUtils;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
+import org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorCreateException;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorFactory;
+import org.mule.runtime.module.launcher.application.FilePackageDiscoverer;
+import org.mule.runtime.module.launcher.application.PackageDiscoverer;
 import org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.launcher.descriptor.EmptyApplicationDescriptor;
 import org.mule.runtime.module.launcher.descriptor.PropertiesDescriptorParser;
@@ -25,7 +32,10 @@ import org.mule.runtime.module.reboot.MuleContainerBootstrapUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -81,11 +91,57 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
       final Set<ArtifactPluginDescriptor> plugins = parsePluginDescriptors(artifactFolder, desc);
       verifyPluginExportedPackages(getAllApplicationPlugins(plugins));
       desc.setPlugins(plugins);
+      desc.setRuntimeLibs(findLibraries(appName));
+      desc.setClassLoaderFilter(createApplicationClassLoaderFilter(desc.getRuntimeLibs()));
     } catch (IOException e) {
       throw new ArtifactDescriptorCreateException("Unable to create application descriptor", e);
     }
 
     return desc;
+  }
+
+  private URL[] findLibraries(String appName) throws MalformedURLException {
+    return findJars(getAppLibFolder(appName)).toArray(new URL[0]);
+  }
+
+  private ArtifactClassLoaderFilter createApplicationClassLoaderFilter(URL[] libraries) {
+
+    return new DefaultArtifactClassLoaderFilter(findExportedPackages(libraries), emptySet())
+    {
+
+      @Override public boolean exportsResource(String name) {
+        return true;
+      }
+    };
+  }
+
+  private Set<String> findExportedPackages(URL[] libraries) {
+    //TODO(pablo.kraan): isolation - make this variable an injectable field
+    final PackageDiscoverer packageDiscoverer = new FilePackageDiscoverer();
+
+    final Set<String> result = new HashSet<>();
+
+    for (URL library : libraries) {
+      Set<String> packages = packageDiscoverer.findPackages(library);
+      result.addAll(packages);
+    }
+
+    return result;
+  }
+
+  private List<URL> findJars(File dir) throws MalformedURLException {
+    List<URL> result = new LinkedList<>();
+
+    if (dir.exists() && dir.canRead()) {
+      @SuppressWarnings("unchecked")
+      Collection<File> jars = listFiles(dir, new String[] {"jar"}, false);
+
+      for (File jar : jars) {
+        result.add(jar.toURI().toURL());
+      }
+    }
+
+    return result;
   }
 
   private List<ArtifactPluginDescriptor> getAllApplicationPlugins(Set<ArtifactPluginDescriptor> plugins) {

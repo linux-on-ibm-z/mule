@@ -6,10 +6,7 @@
  */
 package org.mule.runtime.module.launcher.application;
 
-import static org.apache.commons.io.FileUtils.listFiles;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppClassesFolder;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getAppLibFolder;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getMulePerAppLibFolder;
 import org.mule.runtime.core.util.SystemUtils;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.DeployableArtifactClassLoaderFactory;
@@ -17,11 +14,8 @@ import org.mule.runtime.module.launcher.MuleApplicationClassLoader;
 import org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.launcher.nativelib.NativeLibraryFinderFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,61 +38,44 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
 
   @Override
   public ArtifactClassLoader create(ArtifactClassLoader parent, ApplicationDescriptor descriptor,
-                                    List<ArtifactClassLoader> artifactPluginClassLoders) {
+                                    List<ArtifactClassLoader> artifactPluginClassLoaders) {
     List<URL> urls = getApplicationResourceUrls(descriptor);
 
-    //TODO(pablo.kraan): isolation - need to extend the loopkup policy including the jars from the app
+    //TODO(pablo.kraan): isolation - need to extend the lookup policy including the packages exported by the plugins
     return new MuleApplicationClassLoader(descriptor.getName(), parent.getClassLoader(),
                                           nativeLibraryFinderFactory.create(descriptor.getName()), urls,
-                                          parent.getClassLoaderLookupPolicy(), artifactPluginClassLoders);
+                                          parent.getClassLoaderLookupPolicy(), artifactPluginClassLoaders);
   }
 
   private List<URL> getApplicationResourceUrls(ApplicationDescriptor descriptor) {
     List<URL> urls = new LinkedList<>();
     try {
       urls.add(getAppClassesFolder(descriptor.getName()).toURI().toURL());
-      urls.addAll(findJars(descriptor.getName(), getAppLibFolder(descriptor.getName()), true));
-      urls.addAll(findJars(descriptor.getName(), getMulePerAppLibFolder(), true));
+
+      for (URL url : descriptor.getRuntimeLibs()) {
+        urls.add(url);
+      }
     } catch (IOException e) {
       throw new RuntimeException("Unable to create classloader for application", e);
+    }
+
+    if (!urls.isEmpty() && logger.isInfoEnabled()) {
+      logArtifactRuntimeUrls(descriptor, urls);
     }
 
     return urls;
   }
 
-  /**
-   * Add jars from the supplied directory to the class path
-   */
-  private List<URL> findJars(String appName, File dir, boolean verbose) throws MalformedURLException {
-    List<URL> result = new LinkedList<>();
+  private void logArtifactRuntimeUrls(ApplicationDescriptor descriptor, List<URL> urls) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(String.format("[%s] Loading the following jars:%n", descriptor.getName()));
+    sb.append("=============================").append(SystemUtils.LINE_SEPARATOR);
 
-    if (dir.exists() && dir.canRead()) {
-      @SuppressWarnings("unchecked")
-      Collection<File> jars = listFiles(dir, new String[] {"jar"}, false);
-
-      if (!jars.isEmpty() && logger.isInfoEnabled()) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[%s] Loading the following jars:%n", appName));
-        sb.append("=============================").append(SystemUtils.LINE_SEPARATOR);
-
-        for (File jar : jars) {
-          sb.append(jar.toURI().toURL()).append(SystemUtils.LINE_SEPARATOR);
-        }
-
-        sb.append("=============================").append(SystemUtils.LINE_SEPARATOR);
-
-        if (verbose) {
-          logger.info(sb.toString());
-        } else {
-          logger.debug(sb.toString());
-        }
-      }
-
-      for (File jar : jars) {
-        result.add(jar.toURI().toURL());
-      }
+    for (URL url: urls) {
+      sb.append(url).append(SystemUtils.LINE_SEPARATOR);
     }
 
-    return result;
+    sb.append("=============================").append(SystemUtils.LINE_SEPARATOR);
+    logger.info(sb.toString());
   }
 }

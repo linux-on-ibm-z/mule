@@ -12,31 +12,24 @@ import static org.apache.commons.collections.CollectionUtils.find;
 import static org.mule.runtime.core.config.i18n.MessageFactory.createStaticMessage;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.util.Preconditions.checkState;
-import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_FIRST;
-import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.NULL_CLASSLOADER_FILTER;
 import org.mule.runtime.core.util.UUID;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
-import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy;
 import org.mule.runtime.module.artifact.classloader.DeployableArtifactClassLoaderFactory;
 import org.mule.runtime.module.artifact.classloader.FilteringArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.RegionClassLoader;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptor;
 import org.mule.runtime.module.launcher.application.ArtifactPlugin;
 import org.mule.runtime.module.launcher.application.ArtifactPluginFactory;
-import org.mule.runtime.module.launcher.application.FilePackageDiscoverer;
-import org.mule.runtime.module.launcher.application.PackageDiscoverer;
 import org.mule.runtime.module.launcher.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.module.launcher.plugin.ArtifactPluginRepository;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -48,7 +41,6 @@ import java.util.Set;
 public abstract class AbstractArtifactClassLoaderBuilder<T extends AbstractArtifactClassLoaderBuilder> {
 
   private final DeployableArtifactClassLoaderFactory artifactClassLoaderFactory;
-  private final PackageDiscoverer packageDiscoverer = new FilePackageDiscoverer();
   private final ArtifactPluginRepository artifactPluginRepository;
   private final ArtifactPluginFactory artifactPluginFactory;
   private Set<ArtifactPluginDescriptor> artifactPluginDescriptors = new HashSet<>();
@@ -134,28 +126,13 @@ public abstract class AbstractArtifactClassLoaderBuilder<T extends AbstractArtif
         createPluginClassLoaders(regionClassLoader, effectiveArtifactPluginDescriptors);
     final ArtifactClassLoader artifactClassLoader =
         artifactClassLoaderFactory.create(regionClassLoader, artifactDescriptor, artifactPluginClassLoaders);
-
-    regionClassLoader.addClassLoader(artifactClassLoader, NULL_CLASSLOADER_FILTER);
+    regionClassLoader.addClassLoader(artifactClassLoader, artifactDescriptor.getClassLoaderFilter());
 
     for (int i = 0; i < effectiveArtifactPluginDescriptors.size(); i++) {
       final ArtifactClassLoaderFilter classLoaderFilter = effectiveArtifactPluginDescriptors.get(i).getClassLoaderFilter();
       regionClassLoader.addClassLoader(pluginClassLoaders.get(i), classLoaderFilter);
     }
     return artifactClassLoader;
-  }
-
-  private Map<String, ClassLoaderLookupStrategy> getLookStrategiesFrom(URL[] libraries) {
-    //TODO(pablo.kraan): isolation - check if this is needed to read the packages from the app's lib folder.
-    final Map<String, ClassLoaderLookupStrategy> result = new HashMap<>();
-
-    for (URL library : libraries) {
-      Set<String> packages = packageDiscoverer.findPackages(library);
-      for (String packageName : packages) {
-        result.put(packageName, PARENT_FIRST);
-      }
-    }
-
-    return result;
   }
 
   private List<ArtifactPluginDescriptor> createContainerApplicationPlugins() {

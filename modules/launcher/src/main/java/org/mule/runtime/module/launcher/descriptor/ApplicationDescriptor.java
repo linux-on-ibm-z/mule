@@ -30,7 +30,6 @@ public class ApplicationDescriptor extends DeployableArtifactDescriptor {
   private String[] absoluteResourcePaths;
   private File[] configResourcesFile;
   private Map<String, String> appProperties = new HashMap<String, String>();
-
   private File logConfigFile;
   private Set<ArtifactPluginDescriptor> plugins = new HashSet<>(0);
 

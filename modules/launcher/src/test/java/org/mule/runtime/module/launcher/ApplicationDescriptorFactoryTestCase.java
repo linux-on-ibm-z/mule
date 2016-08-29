@@ -61,6 +61,7 @@ public class ApplicationDescriptorFactoryTestCase extends AbstractMuleTestCase {
     when(applicationPluginRepository.getContainerArtifactPluginDescriptors()).thenReturn(emptyList());
   }
 
+  //TODO(pablo.kraan): isolation - add tests for descriptor's runtime URLs
   @Test
   public void readsPlugin() throws Exception {
     File pluginDir = getAppPluginsFolder(APP_NAME);
