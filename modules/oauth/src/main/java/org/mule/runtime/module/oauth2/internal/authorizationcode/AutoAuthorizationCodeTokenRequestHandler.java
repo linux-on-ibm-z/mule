@@ -34,6 +34,7 @@ import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.core.api.processor.MessageProcessor;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.config.i18n.CoreMessages;
+import org.mule.runtime.core.session.DefaultMuleSession;
 import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.module.http.internal.HttpParser;
 import org.mule.runtime.module.oauth2.internal.MuleEventLogger;
@@ -259,7 +260,7 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
   @Override
   public void doRefreshToken(final MuleEvent currentEvent, final ResourceOwnerOAuthContext resourceOwnerOAuthContext) {
     try {
-      final MuleEvent muleEvent = DefaultMuleEvent.copy(currentEvent);
+      final MuleEvent muleEvent = MuleEvent.builder(currentEvent).session(new DefaultMuleSession(currentEvent.getSession())).build();
       muleEvent.setMessage(MuleMessage.builder(muleEvent.getMessage()).outboundProperties(emptyMap()).build());
       final String userRefreshToken = resourceOwnerOAuthContext.getRefreshToken();
       if (userRefreshToken == null) {

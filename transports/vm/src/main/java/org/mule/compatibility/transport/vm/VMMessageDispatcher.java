@@ -24,6 +24,7 @@ import org.mule.runtime.core.api.execution.ExecutionCallback;
 import org.mule.runtime.core.api.execution.ExecutionTemplate;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.execution.TransactionalExecutionTemplate;
+import org.mule.runtime.core.session.DefaultMuleSession;
 import org.mule.runtime.core.util.queue.Queue;
 import org.mule.runtime.core.util.queue.QueueSession;
 
@@ -52,7 +53,7 @@ public class VMMessageDispatcher extends AbstractMessageDispatcher {
     if (endpointUri == null) {
       throw new DispatchException(CoreMessages.objectIsNull("Endpoint"), event, getEndpoint());
     }
-    MuleEvent eventToDispatch = DefaultMuleEvent.copy(event);
+    MuleEvent eventToDispatch = MuleEvent.builder(event).session(new DefaultMuleSession(event.getSession())).build();
     final MuleCompatibilityMessageBuilder builder =
         new MuleCompatibilityMessageBuilder(createInboundMessage(eventToDispatch.getMessage()));
     builder.correlationId(eventToDispatch.getCorrelationId());
@@ -87,7 +88,7 @@ public class VMMessageDispatcher extends AbstractMessageDispatcher {
       throw new NoReceiverForEndpointException(VMMessages.noReceiverForEndpoint(connector.getName(), endpoint.getEndpointURI()));
     }
 
-    MuleEvent eventToSend = DefaultMuleEvent.copy(event);
+    MuleEvent eventToSend = MuleEvent.builder(event).session(new DefaultMuleSession(event.getSession())).build();
     final MuleCompatibilityMessageBuilder builder =
         new MuleCompatibilityMessageBuilder(createInboundMessage(eventToSend.getMessage()));
     builder.correlationId(eventToSend.getCorrelationId());

@@ -52,6 +52,7 @@ public class SynchronousUntilSuccessfulProcessingStrategyTestCase extends Abstra
   @Before
   public void setUp() throws Exception {
     when(mockAlwaysTrueFailureExpressionFilter.accept(any(MuleEvent.class))).thenReturn(true);
+    when(mockRoute.process(any(MuleEvent.class))).then(inv -> inv.getArgumentAt(0, MuleEvent.class));
     when(mockUntilSuccessfulConfiguration.getRoute()).thenReturn(mockRoute);
     when(mockUntilSuccessfulConfiguration.getAckExpression()).thenReturn(null);
     when(mockUntilSuccessfulConfiguration.getMaxRetries()).thenReturn(DEFAULT_RETRIES);
@@ -90,7 +91,7 @@ public class SynchronousUntilSuccessfulProcessingStrategyTestCase extends Abstra
       fail("processing should throw exception");
     } catch (MessagingException e) {
       assertThat(e, instanceOf(RoutingException.class));
-      verify(mockRoute, times(DEFAULT_RETRIES + 1)).process(event);
+      verify(mockRoute, times(DEFAULT_RETRIES + 1)).process(any(MuleEvent.class));
       assertThat(getCurrentEvent(), sameInstance(e.getEvent()));
     }
   }
@@ -104,7 +105,7 @@ public class SynchronousUntilSuccessfulProcessingStrategyTestCase extends Abstra
       fail("processing should throw exception");
     } catch (MessagingException e) {
       assertThat(e, instanceOf(RoutingException.class));
-      verify(mockRoute, times(DEFAULT_RETRIES + 1)).process(event);
+      verify(mockRoute, times(DEFAULT_RETRIES + 1)).process(any(MuleEvent.class));
       verify(mockAlwaysTrueFailureExpressionFilter, times(DEFAULT_RETRIES + 1)).accept(any(MuleEvent.class));
     }
   }
@@ -112,10 +113,9 @@ public class SynchronousUntilSuccessfulProcessingStrategyTestCase extends Abstra
   @Test
   public void successfulExecution() throws Exception {
     SynchronousUntilSuccessfulProcessingStrategy processingStrategy = createProcessingStrategy();
-    when(mockRoute.process(event)).thenAnswer(invocation -> (MuleEvent) invocation.getArguments()[0]);
     MuleEvent response = processingStrategy.route(event, getTestFlow());
     assertThat(response.getMessage(), is(event.getMessage()));
-    verify(mockRoute).process(event);
+    verify(mockRoute).process(any(MuleEvent.class));
     assertThat(getCurrentEvent(), sameInstance(response));
   }
 
@@ -134,7 +134,7 @@ public class SynchronousUntilSuccessfulProcessingStrategyTestCase extends Abstra
       fail("processing should throw exception");
     } catch (MessagingException e) {
       assertThat(e, instanceOf(RoutingException.class));
-      verify(mockRoute, times(DEFAULT_RETRIES + 1)).process(event);
+      verify(mockRoute, times(DEFAULT_RETRIES + 1)).process(any(MuleEvent.class));
       verify(mockAlwaysTrueFailureExpressionFilter, times(DEFAULT_RETRIES + 1)).accept(any(MuleEvent.class));
     }
   }
@@ -142,14 +142,13 @@ public class SynchronousUntilSuccessfulProcessingStrategyTestCase extends Abstra
   @Test
   public void successfulExecutionWithAckExpression() throws Exception {
     String ackExpression = "some-expression";
-    String expressionEvalutaionResult = "new payload";
+    String expressionEvaluationResult = "new payload";
     when(mockUntilSuccessfulConfiguration.getAckExpression()).thenReturn(ackExpression);
     when(mockUntilSuccessfulConfiguration.getMuleContext().getExpressionManager().evaluate(ackExpression, event, null))
-        .thenReturn(expressionEvalutaionResult);
+        .thenReturn(expressionEvaluationResult);
     SynchronousUntilSuccessfulProcessingStrategy processingStrategy = createProcessingStrategy();
-    when(mockRoute.process(any(MuleEvent.class))).thenAnswer(invocation -> (MuleEvent) invocation.getArguments()[0]);
     MuleEvent response = processingStrategy.route(event, getTestFlow());
-    assertThat(response.getMessage().getPayload(), equalTo(expressionEvalutaionResult));
+    assertThat(response.getMessage().getPayload(), equalTo(expressionEvaluationResult));
     verify(mockRoute).process(any(MuleEvent.class));
     verify(mockUntilSuccessfulConfiguration.getMuleContext().getExpressionManager()).evaluate(ackExpression, event, null);
   }

@@ -52,13 +52,13 @@ public class ErrorHandler extends AbstractMuleObjectOwner<MessagingExceptionHand
 
   @Override
   public MuleEvent handleException(MessagingException exception, MuleEvent event) {
-    event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build());
-    event.setError(ErrorBuilder.builder(exception).build());
+    event = MuleEvent.builder(event)
+        .message(MuleMessage.builder(event.getMessage()).exceptionPayload(new DefaultExceptionPayload(exception)).build())
+        .error(ErrorBuilder.builder(exception).build()).build();
     for (MessagingExceptionHandlerAcceptor exceptionListener : exceptionListeners) {
       if (exceptionListener.accept(event)) {
-        event.setMessage(MuleMessage.builder(event.getMessage()).exceptionPayload(null).build());
-        event.setError(null);
-        return exceptionListener.handleException(exception, event);
+        return exceptionListener.handleException(exception, MuleEvent.builder(event)
+            .message(MuleMessage.builder(event.getMessage()).exceptionPayload(null).build()).error(null).build());
       }
     }
     throw new MuleRuntimeException(CoreMessages.createStaticMessage("Default exception strategy must accept any event."));

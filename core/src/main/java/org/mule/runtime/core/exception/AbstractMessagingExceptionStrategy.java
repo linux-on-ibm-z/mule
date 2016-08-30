@@ -66,16 +66,14 @@ public abstract class AbstractMessagingExceptionStrategy extends AbstractExcepti
       Error error = builder(ex).build();
       if (getCurrentEvent() != null) {
         MuleEvent currentEvent = getCurrentEvent();
-        currentEvent.setError(error);
-        currentEvent.setMessage(MuleMessage.builder(currentEvent.getMessage()).exceptionPayload(exceptionPayload).build());
-        setCurrentEvent(currentEvent);
+        setCurrentEvent(MuleEvent.builder(currentEvent)
+            .message(MuleMessage.builder(currentEvent.getMessage()).exceptionPayload(exceptionPayload).build()).error(error)
+            .build());
       }
-      event.setError(error);
-      event.setMessage(MuleMessage.builder(event.getMessage())
-          .nullPayload()
-          .exceptionPayload(exceptionPayload)
-          .build());
-      return event;
+      
+      return MuleEvent.builder(event)
+          .message(MuleMessage.builder(event.getMessage()).nullPayload().exceptionPayload(exceptionPayload).build()).error(error)
+          .build();
     } finally {
       muleContext.getNotificationManager().fireNotification(new ExceptionStrategyNotification(event, flowConstruct, PROCESS_END));
     }

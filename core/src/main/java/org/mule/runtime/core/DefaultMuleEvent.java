@@ -31,7 +31,6 @@ import org.mule.runtime.core.context.notification.DefaultFlowCallStack;
 import org.mule.runtime.core.message.Correlation;
 import org.mule.runtime.core.metadata.TypedValue;
 import org.mule.runtime.core.processor.strategy.NonBlockingProcessingStrategy;
-import org.mule.runtime.core.session.DefaultMuleSession;
 import org.mule.runtime.core.transaction.TransactionCoordination;
 import org.mule.runtime.core.util.CopyOnWriteCaseInsensitiveMap;
 import org.mule.runtime.core.util.store.DeserializationPostInitialisable;
@@ -103,21 +102,11 @@ public class DefaultMuleEvent implements MuleEvent, DeserializationPostInitialis
    * @param rewriteEvent the previous event that will be used as a template for this event
    */
   public DefaultMuleEvent(MuleMessage message, MuleEvent rewriteEvent) {
-    this(message, rewriteEvent, rewriteEvent.getSession());
+    this(message, rewriteEvent, rewriteEvent.getFlowConstruct(), rewriteEvent.getSession(), rewriteEvent.isSynchronous());
   }
 
   public DefaultMuleEvent(MuleMessage message, MuleEvent rewriteEvent, boolean synchronus) {
     this(message, rewriteEvent, rewriteEvent.getFlowConstruct(), rewriteEvent.getSession(), synchronus);
-  }
-
-  /**
-   * A helper constructor used to rewrite an event payload
-   *
-   * @param message The message to use as the current payload of the event
-   * @param rewriteEvent the previous event that will be used as a template for this event
-   */
-  public DefaultMuleEvent(MuleMessage message, MuleEvent rewriteEvent, MuleSession session) {
-    this(message, rewriteEvent, rewriteEvent.getFlowConstruct(), session, rewriteEvent.isSynchronous());
   }
 
   protected DefaultMuleEvent(MuleMessage message,
@@ -134,13 +123,9 @@ public class DefaultMuleEvent implements MuleEvent, DeserializationPostInitialis
 
     this.exchangePattern = rewriteEvent.getExchangePattern();
     if (rewriteEvent instanceof DefaultMuleEvent) {
-      if (true) {
-        this.flowVariables = ((DefaultMuleEvent) rewriteEvent).flowVariables;
-      } else {
-        this.flowVariables.putAll(((DefaultMuleEvent) rewriteEvent).flowVariables);
-      }
+      this.flowVariables = ((DefaultMuleEvent) rewriteEvent).flowVariables;
+      // this.flowVariables.putAll(((DefaultMuleEvent) rewriteEvent).flowVariables);
       this.legacyCorrelationId = ((DefaultMuleEvent) rewriteEvent).getLegacyCorrelationId();
-    } else {
     }
     setMessage(message);
     this.replyToHandler = rewriteEvent.getReplyToHandler();
@@ -417,21 +402,6 @@ public class DefaultMuleEvent implements MuleEvent, DeserializationPostInitialis
   @Override
   public void setMessage(MuleMessage message) {
     this.message = message;
-  }
-
-  /**
-   * This method does a complete deep copy of the event.
-   *
-   * This method should be used whenever the event is going to be executed in a different context and changes to that event must
-   * not effect the source event.
-   *
-   * @param event the event that must be copied
-   * @return the copied event
-   */
-  public static MuleEvent copy(MuleEvent event) {
-    DefaultMuleEvent eventCopy = new DefaultMuleEvent(event.getMessage(), event, new DefaultMuleSession(event.getSession()));
-    eventCopy.flowVariables = ((DefaultMuleEvent) event).flowVariables.clone();
-    return eventCopy;
   }
 
   @Override
