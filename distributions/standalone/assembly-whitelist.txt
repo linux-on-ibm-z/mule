@@ -91,7 +91,7 @@
 /mule-standalone-${productVersion}/lib/boot/slf4j-api-1.7.24.jar
 /mule-standalone-${productVersion}/lib/boot/jackson-databind-2.9.7.jar
 /mule-standalone-${productVersion}/lib/boot/jackson-annotations-2.9.0.jar
-/mule-standalone-${productVersion}/lib/boot/jackson-core-2.9.7.jar
+/mule-standalone-${productVersion}/lib/boot/jackson-core-2.8.9.jar
 
 #
 # /lib/boot/exec
@@ -114,7 +114,7 @@
 # /lib/mule
 #
 /mule-standalone-${productVersion}/lib/mule
-/mule-standalone-${productVersion}/lib/mule/mule-common-${productVersion}.jar
+/mule-standalone-${productVersion}/lib/mule/mule-common-3.9.0.jar
 /mule-standalone-${productVersion}/lib/mule/mule-core-${productVersion}-tests.jar
 /mule-standalone-${productVersion}/lib/mule/mule-core-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-extensions-annotations-1.0.0-alpha-1.jar
